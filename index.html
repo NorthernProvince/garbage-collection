@@ -11,9 +11,12 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--gray); color: var(--black); line-height: 1.5; }
     
+    /* --- SCREENS --- */
+    .app-view { display: none; height: 100vh; }
+    .app-view.active { display: flex; }
+
     /* --- LOGIN SCREEN --- */
-    .screen { display: none; height: 100vh; align-items: center; justify-content: center; padding: 20px; }
-    .screen.active { display: flex; }
+    #auth-screen { align-items: center; justify-content: center; padding: 20px; }
     .card { background: var(--white); padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
     .logo { width: 50px; height: 50px; background: var(--yellow); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; margin-bottom: 20px; }
     input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; font-family: inherit; background: var(--white); }
@@ -22,29 +25,23 @@
     .btn-outline { background: transparent; color: var(--black); border: 1px solid var(--border); }
     
     /* --- CUSTOMER APP LAYOUT (Mobile) --- */
-    #customer-app { display: none; height: 100vh; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 0; }
-    #customer-app.active { display: flex; }
+    #customer-app { flex-direction: column; }
     .header { background: var(--yellow); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
     .main-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 80px; }
     .card-app { background: var(--white); padding: 20px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
-    
     .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px; }
     .nav-item { text-align: center; font-size: 14px; font-weight: bold; color: #666; cursor: pointer; padding: 8px 16px; border-radius: 8px; }
     .nav-item.active { color: var(--black); background: rgba(0,0,0,0.05); }
 
     /* --- ADMIN DASHBOARD LAYOUT (Desktop) --- */
-    #admin-app { display: none; height: 100vh; background: #F0F2F5; }
-    #admin-app.active { display: flex; }
-    
+    #admin-app { background: #F0F2F5; flex-direction: row; }
     .sidebar { width: 250px; background: var(--black); color: var(--white); display: flex; flex-direction: column; }
     .sidebar-header { padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 12px; }
     .sidebar-menu { padding: 16px; flex: 1; }
     .menu-item { padding: 12px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; color: #A0A0A0; margin-bottom: 4px; }
     .menu-item.active { background: rgba(255, 204, 0, 0.1); color: var(--yellow); }
-    
     .admin-main { flex: 1; padding: 32px; overflow-y: auto; }
     .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    
     .data-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     .data-table th, .data-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); }
     .data-table th { background: #FAFAFA; font-weight: 600; color: #666; font-size: 14px; text-transform: uppercase; }
@@ -76,10 +73,8 @@
 </head>
 <body>
 
-  <!-- ========================================== -->
-  <!-- 1. AUTH SCREEN (Shared by both)            -->
-  <!-- ========================================== -->
-  <div id="auth-screen" class="screen active">
+  <!-- 1. AUTH SCREEN (Default View) -->
+  <div id="auth-screen" class="app-view active">
     <div class="card">
       <div class="logo">ZG</div>
       <h1 style="font-size: 24px; margin-bottom: 8px;">Welcome</h1>
@@ -95,10 +90,8 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- 2. CUSTOMER MOBILE APP                     -->
-  <!-- ========================================== -->
-  <div id="customer-app">
+  <!-- 2. CUSTOMER MOBILE APP -->
+  <div id="customer-app" class="app-view">
     <header class="header">
       <div style="display: flex; align-items: center; gap: 12px;">
         <div class="logo" style="margin: 0; width: 36px; height: 36px; font-size: 14px;">ZG</div>
@@ -111,30 +104,25 @@
     </header>
 
     <main class="main-content">
-      <!-- HOME VIEW -->
       <div id="view-home">
         <div class="card-app" style="background: var(--black); color: white;">
           <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 8px; color: var(--yellow);">Account Balance</h2>
           <div style="font-size: 32px; font-weight: bold;">ZMW 0.00</div>
         </div>
-
         <div class="card-app">
           <h2 style="font-size: 18px; margin-bottom: 16px;">Quick Actions</h2>
           <button class="btn mb-2" onclick="requestCollection()">Request Pickup</button>
           <button class="btn btn-outline" onclick="openPayModal()">Pay Bill</button>
         </div>
-
         <h2 class="page-title mt-4">Recent Requests</h2>
         <div id="requests-list"></div>
       </div>
 
-      <!-- HISTORY VIEW -->
       <div id="view-history" class="hidden">
         <h2 class="page-title">Payment History</h2>
         <div id="payments-list"></div>
       </div>
 
-      <!-- PROFILE VIEW -->
       <div id="view-profile" class="hidden">
         <h2 class="page-title">My Profile</h2>
         <div class="card-app">
@@ -153,10 +141,8 @@
     </nav>
   </div>
 
-  <!-- ========================================== -->
-  <!-- 3. ADMIN DESKTOP DASHBOARD                 -->
-  <!-- ========================================== -->
-  <div id="admin-app">
+  <!-- 3. ADMIN DESKTOP DASHBOARD -->
+  <div id="admin-app" class="app-view">
     <div class="sidebar">
       <div class="sidebar-header">
         <div class="logo" style="margin: 0; width: 36px; height: 36px; font-size: 14px;">ZG</div>
@@ -170,7 +156,6 @@
         <div class="menu-item" onclick="handleLogout()" style="color: #EF4444; margin-top: 24px;">Log out</div>
       </div>
     </div>
-    
     <div class="admin-main">
       <div class="admin-header">
         <h1 style="font-size: 28px; font-weight: bold;">Payment Approvals</h1>
@@ -180,7 +165,7 @@
     </div>
   </div>
 
-  <!-- PAY BILL MODAL (Customer) -->
+  <!-- PAY BILL MODAL -->
   <div class="modal-overlay" id="pay-modal">
     <div class="modal" style="text-align: left;">
       <h2 style="font-size: 20px; margin-bottom: 8px;">Pay Bill</h2>
@@ -214,14 +199,13 @@
     // ==========================================
     // ⚠️ PASTE YOUR KEYS HERE ⚠️
     // ==========================================
-     var SUPABASE_URL = 'https://ngyvyldiwzivpvgwyssp.supabase.co';
+    var SUPABASE_URL = 'https://ngyvyldiwzivpvgwyssp.supabase.co';
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neXZ5bGRpd3ppdnB2Z3d5c3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1OTM3OTIsImV4cCI6MjExMDE2OTc5Mn0.KjKD1Ca9IcVi6M3hyApk7PH7vywjn5CzJjo4tCHmR-c';
 
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     var currentUser = null;
     var currentCustomer = null;
 
-    // --- UTILS ---
     function showAlert(title, message, isError) {
       document.getElementById('alert-title').innerText = title;
       document.getElementById('alert-message').innerText = message;
@@ -232,11 +216,9 @@
     }
     function closeAlert() { document.getElementById('alert-modal').classList.remove('active'); }
 
-    // --- AUTH & ROUTING ---
     async function checkSession() {
       var res = await supabaseClient.auth.getSession();
       if (res.data.session) { routeUser(res.data.session.user); } 
-      else { document.getElementById('auth-screen').classList.add('active'); }
     }
 
     async function handleLogin() {
@@ -271,23 +253,19 @@
       document.getElementById('auth-screen').classList.add('active');
     }
 
-    // THIS IS THE MOST IMPORTANT FUNCTION
     async function routeUser(user) {
       currentUser = user;
       document.getElementById('auth-screen').classList.remove('active');
       
-      // 1. Check role
       var isAdmin = false;
       var profRes = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
       
       if (profRes.data && profRes.data.role === 'owner_admin') {
         isAdmin = true;
       } else if (user.email === 'alphwila7@gmail.com') {
-        // Fallback: If you are logged in with the owner email, force admin
         isAdmin = true;
       }
 
-      // 2. Route to correct screen
       if (isAdmin) {
         document.getElementById('admin-email').innerText = user.email;
         document.getElementById('admin-app').classList.add('active');
@@ -296,7 +274,6 @@
         document.getElementById('cust-email').innerText = user.email;
         document.getElementById('customer-app').classList.add('active');
         
-        // Fetch customer data
         var res = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
         if (res.data) { currentCustomer = res.data; }
 
@@ -305,19 +282,15 @@
       }
     }
 
-    // --- CUSTOMER LOGIC ---
     function switchView(viewName) {
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-history').classList.add('hidden');
       document.getElementById('view-profile').classList.add('hidden');
-      
       document.getElementById('nav-home').classList.remove('active');
       document.getElementById('nav-history').classList.remove('active');
       document.getElementById('nav-profile').classList.remove('active');
-      
       document.getElementById('view-' + viewName).classList.remove('hidden');
       document.getElementById('nav-' + viewName).classList.add('active');
-
       if (viewName === 'history') loadPayments();
       if (viewName === 'profile') loadProfile();
     }
@@ -342,28 +315,19 @@
         if (resCust.error) { showAlert('Error', resCust.error.message, true); return; }
         currentCustomer = resCust.data;
       }
-
       var resReq = await supabaseClient.from('collection_requests').insert([
         { customer_id: currentCustomer.id, status: 'requested', customer_notes: 'Requested via App' }
       ]);
-
-      if (resReq.error) { 
-        showAlert('Error', resReq.error.message, true); 
-      } else { 
-        showAlert('Request Sent!', 'Your pickup has been scheduled.', false); 
-        loadRequests(); 
-      }
+      if (resReq.error) { showAlert('Error', resReq.error.message, true); } 
+      else { showAlert('Request Sent!', 'Your pickup has been scheduled.', false); loadRequests(); }
     }
 
     async function loadRequests() {
       var list = document.getElementById('requests-list');
       var res = await supabaseClient.from('collection_requests').select('*').order('requested_at', { ascending: false });
-
       if (res.error || !res.data || res.data.length === 0) {
-        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No collection requests found.</p></div>';
-        return;
+        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No collection requests found.</p></div>'; return;
       }
-
       var html = '';
       res.data.forEach(function(req) {
         var dateStr = new Date(req.requested_at).toLocaleDateString();
@@ -382,37 +346,25 @@
     async function submitPayment() {
       var amount = parseFloat(document.getElementById('pay-amount').value);
       var method = document.getElementById('pay-method').value;
-      
       if (!amount || amount <= 0) { showAlert('Invalid Amount', 'Please enter a valid amount.', true); return; }
       if (!currentCustomer) { showAlert('Action Required', 'Please request a pickup first.', true); return; }
-
       var btn = document.getElementById('pay-btn');
       btn.innerText = 'Processing...'; btn.disabled = true;
-
       var res = await supabaseClient.from('payments').insert([{ 
         customer_id: currentCustomer.id, amount_zmw: amount, method: method, status: 'pending' 
       }]);
-
       btn.innerText = 'Confirm'; btn.disabled = false;
-
       if (res.error) { showAlert('Payment Error', res.error.message, true); } 
-      else {
-        showAlert('Payment Recorded!', 'Your payment is now pending confirmation.', false);
-        closePayModal();
-      }
+      else { showAlert('Payment Recorded!', 'Your payment is now pending confirmation.', false); closePayModal(); }
     }
 
     async function loadPayments() {
       var list = document.getElementById('payments-list');
-      if (!currentCustomer) {
-        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payment history.</p></div>'; return;
-      }
+      if (!currentCustomer) { list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payment history.</p></div>'; return; }
       var res = await supabaseClient.from('payments').select('*').eq('customer_id', currentCustomer.id).order('payment_date', { ascending: false });
-
       if (res.error || !res.data || res.data.length === 0) {
         list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payments recorded yet.</p></div>'; return;
       }
-
       var html = '';
       res.data.forEach(function(pay) {
         var statusColor = pay.status === 'confirmed' ? '#10B981' : '#F59E0B';
@@ -427,42 +379,30 @@
       list.innerHTML = html;
     }
 
-    // --- ADMIN LOGIC ---
     async function loadAdminPayments() {
       var container = document.getElementById('admin-payments-table');
       container.innerHTML = '<p>Loading data...</p>';
-      
       var res = await supabaseClient.from('payments').select('*, customers(full_name)').order('payment_date', { ascending: false });
-
       if (res.error || !res.data || res.data.length === 0) {
         container.innerHTML = '<p style="color: #666;">No payments found in the system.</p>'; return;
       }
-
       var html = '<table class="data-table"><thead><tr>';
       html += '<th>Customer</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th><th>Action</th>';
       html += '</tr></thead><tbody>';
-
       res.data.forEach(function(pay) {
         var statusClass = pay.status === 'confirmed' ? 'status-confirmed' : 'status-pending';
         var dateStr = new Date(pay.payment_date).toLocaleDateString();
         var custName = pay.customers ? pay.customers.full_name : 'Unknown';
-        
-        html += '<tr>';
-        html += '<td style="font-weight: 500;">' + custName + '</td>';
+        html += '<tr><td style="font-weight: 500;">' + custName + '</td>';
         html += '<td>ZMW ' + pay.amount_zmw.toFixed(2) + '</td>';
         html += '<td>' + pay.method.toUpperCase() + '</td>';
         html += '<td>' + dateStr + '</td>';
-        html += '<td><span class="status-badge ' + statusClass + '">' + pay.status + '</span></td>';
-        
-        html += '<td>';
+        html += '<td><span class="status-badge ' + statusClass + '">' + pay.status + '</span></td><td>';
         if (pay.status === 'pending') {
           html += '<button class="btn btn-sm" style="background: #10B981; color: white;" onclick="approvePayment(\'' + pay.id + '\')">Approve</button>';
-        } else {
-          html += '<span style="color: #999; font-size: 14px;">Completed</span>';
-        }
+        } else { html += '<span style="color: #999; font-size: 14px;">Completed</span>'; }
         html += '</td></tr>';
       });
-
       html += '</tbody></table>';
       container.innerHTML = html;
     }
@@ -473,7 +413,13 @@
       else { showAlert('Approved!', 'The payment has been successfully confirmed.', false); loadAdminPayments(); }
     }
 
-    window.addEventListener('DOMContentLoaded', function() { checkSession(); });
+    // Start the app on page load
+    window.addEventListener('DOMContentLoaded', function() { 
+      // Show login screen immediately
+      document.getElementById('auth-screen').classList.add('active');
+      // Then check if already logged in
+      checkSession(); 
+    });
   </script>
 </body>
 </html>
