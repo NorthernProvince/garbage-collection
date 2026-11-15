@@ -79,7 +79,7 @@
       <div style="display: flex; align-items: center; gap: 12px;">
         <div class="logo" style="margin: 0; width: 36px; height: 36px; font-size: 14px;">ZG</div>
         <div>
-          <div style="font-weight: bold; font-size: 16px;">Customer Portal</div>
+          <div style="font-weight: bold; font-size: 16px;" id="header-title">Customer Portal</div>
           <div class="text-sm" id="user-email" style="opacity: 0.7;">loading...</div>
         </div>
       </div>
@@ -87,7 +87,7 @@
     </header>
 
     <main class="main-content">
-      <!-- HOME VIEW -->
+      <!-- HOME VIEW (Customer) -->
       <div id="view-home">
         <div class="card-app" style="background: var(--black); color: white;">
           <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 8px; color: var(--yellow);">Account Balance</h2>
@@ -105,7 +105,7 @@
         <div id="requests-list"></div>
       </div>
 
-      <!-- HISTORY VIEW -->
+      <!-- HISTORY VIEW (Customer) -->
       <div id="view-history" class="hidden">
         <h2 class="page-title">Payment History</h2>
         <div id="payments-list"></div>
@@ -125,6 +125,13 @@
           <p id="profile-name" style="font-weight: bold;">-</p>
         </div>
       </div>
+
+      <!-- ADMIN VIEW (Only visible to owner_admin) -->
+      <div id="view-admin" class="hidden">
+        <h2 class="page-title">Admin Dashboard</h2>
+        <p class="text-sm mb-4" style="color: #666;">Manage pending payments below.</p>
+        <div id="admin-payments-list"></div>
+      </div>
     </main>
 
     <!-- BOTTOM NAVIGATION -->
@@ -132,6 +139,7 @@
       <div class="nav-item active" id="nav-home" onclick="switchView('home')">Home</div>
       <div class="nav-item" id="nav-history" onclick="switchView('history')">History</div>
       <div class="nav-item" id="nav-profile" onclick="switchView('profile')">Profile</div>
+      <div class="nav-item hidden" id="nav-admin" onclick="switchView('admin')">Admin</div>
     </nav>
   </div>
 
@@ -139,7 +147,7 @@
   <div class="modal-overlay" id="pay-modal">
     <div class="modal" style="text-align: left;">
       <h2 style="font-size: 20px; margin-bottom: 8px;">Pay Bill</h2>
-      <p class="text-sm" style="color: #666; margin-bottom: 20px;">Enter the amount you wish to pay. (Note: This records the payment, but does not deduct real money yet).</p>
+      <p class="text-sm" style="color: #666; margin-bottom: 20px;">Enter the amount you wish to pay.</p>
       
       <label class="text-sm" style="font-weight: bold;">Amount (ZMW)</label>
       <input type="number" id="pay-amount" placeholder="e.g. 200" style="margin-top: 4px;">
@@ -158,7 +166,7 @@
     </div>
   </div>
 
-  <!-- CUSTOM ALERT MODAL (Replaces ugly browser alerts) -->
+  <!-- CUSTOM ALERT MODAL -->
   <div class="modal-overlay" id="alert-modal">
     <div class="modal">
       <div class="modal-icon success" id="alert-icon">✓</div>
@@ -172,18 +180,17 @@
     // ==========================================
     // ⚠️ PASTE YOUR KEYS HERE ⚠️
     // ==========================================
-    var SUPABASE_URL = 'https://ngyvyldiwzivpvgwyssp.supabase.co';
-    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neXZ5bGRpd3ppdnB2Z3d5c3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1OTM3OTIsImV4cCI6MjExMDE2OTc5Mn0.KjKD1Ca9IcVi6M3hyApk7PH7vywjn5CzJjo4tCHmR-c';
+    var SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL_HERE';
+    var SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
 
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     var currentUser = null;
     var currentCustomer = null;
+    var isAdmin = false;
 
-    // --- CUSTOM ALERT LOGIC ---
     function showAlert(title, message, isError) {
       document.getElementById('alert-title').innerText = title;
       document.getElementById('alert-message').innerText = message;
-      
       var icon = document.getElementById('alert-icon');
       if (isError) {
         icon.className = 'modal-icon error';
@@ -192,15 +199,10 @@
         icon.className = 'modal-icon success';
         icon.innerText = '✓';
       }
-      
       document.getElementById('alert-modal').classList.add('active');
     }
+    function closeAlert() { document.getElementById('alert-modal').classList.remove('active'); }
 
-    function closeAlert() {
-      document.getElementById('alert-modal').classList.remove('active');
-    }
-
-    // --- AUTHENTICATION ---
     async function checkSession() {
       var res = await supabaseClient.auth.getSession();
       if (res.data.session) { showApp(res.data.session.user); }
@@ -228,15 +230,9 @@
       var email = document.getElementById('email').value;
       var password = document.getElementById('password').value;
       if (!email || !password) { document.getElementById('auth-error').innerText = 'Please enter email and password.'; return; }
-      
       var res = await supabaseClient.auth.signUp({ email: email, password: password });
-      
-      if (res.error) { 
-        document.getElementById('auth-error').innerText = res.error.message; 
-      } else { 
-        showAlert('Account Created!', 'Welcome to Zambia Garbage Collection.', false); 
-        if (res.data.user) showApp(res.data.user); 
-      }
+      if (res.error) { document.getElementById('auth-error').innerText = res.error.message; } 
+      else { showAlert('Account Created!', 'Welcome to Zambia Garbage Collection.', false); if (res.data.user) showApp(res.data.user); }
     }
 
     async function handleLogout() {
@@ -245,21 +241,23 @@
       document.getElementById('auth-screen').classList.add('active');
     }
 
-    // --- NAVIGATION ---
     function switchView(viewName) {
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-history').classList.add('hidden');
       document.getElementById('view-profile').classList.add('hidden');
+      document.getElementById('view-admin').classList.add('hidden');
       
       document.getElementById('nav-home').classList.remove('active');
       document.getElementById('nav-history').classList.remove('active');
       document.getElementById('nav-profile').classList.remove('active');
+      document.getElementById('nav-admin').classList.remove('active');
       
       document.getElementById('view-' + viewName).classList.remove('hidden');
       document.getElementById('nav-' + viewName).classList.add('active');
 
       if (viewName === 'history') loadPayments();
       if (viewName === 'profile') loadProfile();
+      if (viewName === 'admin') loadAdminPayments();
     }
 
     async function showApp(user) {
@@ -268,6 +266,18 @@
       document.getElementById('app-screen').classList.add('active');
       document.getElementById('user-email').innerText = user.email;
       
+      // Check if this user is an Admin
+      var profRes = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+      if (profRes.data && profRes.data.role === 'owner_admin') {
+        isAdmin = true;
+        document.getElementById('nav-admin').classList.remove('hidden');
+        document.getElementById('header-title').innerText = 'Admin Portal';
+      } else {
+        isAdmin = false;
+        document.getElementById('nav-admin').classList.add('hidden');
+        document.getElementById('header-title').innerText = 'Customer Portal';
+      }
+
       var res = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
       if (res.data) { currentCustomer = res.data; }
 
@@ -289,17 +299,12 @@
     // --- REQUESTS ---
     async function requestCollection() {
       if (!currentUser) return;
-      
       if (!currentCustomer) {
         var randNum = Math.floor(Math.random() * 10000);
         var resCust = await supabaseClient.from('customers').insert([{ 
-          profile_id: currentUser.id, 
-          customer_number: 'C-' + randNum,
-          full_name: currentUser.email.split('@')[0], 
-          phone: '0970000000', 
-          address: 'Default Address' 
+          profile_id: currentUser.id, customer_number: 'C-' + randNum,
+          full_name: currentUser.email.split('@')[0], phone: '0970000000', address: 'Default Address' 
         }]).select().single();
-        
         if (resCust.error) { showAlert('Error', resCust.error.message, true); return; }
         currentCustomer = resCust.data;
       }
@@ -339,7 +344,7 @@
       list.innerHTML = html;
     }
 
-    // --- PAYMENTS ---
+    // --- PAYMENTS (Customer) ---
     function openPayModal() { document.getElementById('pay-modal').classList.add('active'); }
     function closePayModal() { document.getElementById('pay-modal').classList.remove('active'); document.getElementById('pay-amount').value = ''; }
 
@@ -351,18 +356,13 @@
       if (!currentCustomer) { showAlert('Action Required', 'Please request a pickup first to create your customer profile.', true); return; }
 
       var btn = document.getElementById('pay-btn');
-      btn.innerText = 'Processing...';
-      btn.disabled = true;
+      btn.innerText = 'Processing...'; btn.disabled = true;
 
       var res = await supabaseClient.from('payments').insert([{ 
-        customer_id: currentCustomer.id, 
-        amount_zmw: amount, 
-        method: method, 
-        status: 'pending' 
+        customer_id: currentCustomer.id, amount_zmw: amount, method: method, status: 'pending' 
       }]);
 
-      btn.innerText = 'Confirm';
-      btn.disabled = false;
+      btn.innerText = 'Confirm'; btn.disabled = false;
 
       if (res.error) {
         showAlert('Payment Error', res.error.message, true);
@@ -378,7 +378,6 @@
         list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payment history.</p></div>';
         return;
       }
-
       var res = await supabaseClient.from('payments').select('*').eq('customer_id', currentCustomer.id).order('payment_date', { ascending: false });
 
       if (res.error || !res.data || res.data.length === 0) {
@@ -400,6 +399,58 @@
         html += '</div>';
       });
       list.innerHTML = html;
+    }
+
+    // --- ADMIN LOGIC ---
+    async function loadAdminPayments() {
+      var list = document.getElementById('admin-payments-list');
+      
+      // Fetch payments and join with customer name
+      var res = await supabaseClient.from('payments')
+        .select('*, customers(full_name, customer_number)')
+        .order('payment_date', { ascending: false });
+
+      if (res.error || !res.data || res.data.length === 0) {
+        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payments found in the system.</p></div>';
+        return;
+      }
+
+      var html = '';
+      res.data.forEach(function(pay) {
+        var statusColor = pay.status === 'confirmed' ? '#10B981' : '#F59E0B';
+        var dateStr = new Date(pay.payment_date).toLocaleDateString();
+        var custName = pay.customers ? pay.customers.full_name : 'Unknown';
+        
+        html += '<div class="card-app" style="padding: 16px; border-left: 4px solid ' + statusColor + ';">';
+        html += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">';
+        html += '<strong>' + custName + '</strong>';
+        html += '<span style="font-size: 12px; color: white; background: ' + statusColor + '; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">' + pay.status + '</span>';
+        html += '</div>';
+        html += '<div class="text-sm" style="margin-bottom: 8px;"><strong>Amount:</strong> ZMW ' + pay.amount_zmw.toFixed(2) + '</div>';
+        html += '<div class="text-sm" style="color: #666;">Method: ' + pay.method.toUpperCase() + '</div>';
+        html += '<div class="text-sm" style="color: #666; margin-bottom: 12px;">Date: ' + dateStr + '</div>';
+        
+        // If pending, show Approve button
+        if (pay.status === 'pending') {
+          html += '<button class="btn" style="padding: 8px; font-size: 14px;" onclick="approvePayment(\'' + pay.id + '\')">Approve Payment</button>';
+        }
+        
+        html += '</div>';
+      });
+      list.innerHTML = html;
+    }
+
+    async function approvePayment(paymentId) {
+      var res = await supabaseClient.from('payments')
+        .update({ status: 'confirmed', confirmed_at: new Date().toISOString() })
+        .eq('id', paymentId);
+
+      if (res.error) {
+        showAlert('Error', res.error.message, true);
+      } else {
+        showAlert('Approved!', 'The payment has been successfully confirmed.', false);
+        loadAdminPayments(); // Refresh the list
+      }
     }
 
     window.addEventListener('DOMContentLoaded', function() { checkSession(); });
