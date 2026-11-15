@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#FFCC00" />
+  <title>Zambia Garbage Collection</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root { --yellow: #FFCC00; --black: #000000; --white: #FFFFFF; --gray: #F5F5F5; --border: rgba(0,0,0,0.1); }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--gray); color: var(--black); line-height: 1.5; }
+    
+    #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .auth-card { background: var(--white); padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    .logo { width: 50px; height: 50px; background: var(--yellow); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; margin-bottom: 20px; }
+    
+    #app-screen { display: none; height: 100vh; flex-direction: column; }
+    .header { background: var(--yellow); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .main-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 80px; }
+
+    input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; font-family: inherit; }
+    .btn { width: 100%; padding: 14px; background: var(--black); color: var(--yellow); border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.8; }
+    .btn-outline { background: transparent; color: var(--black); border: 1px solid var(--border); }
+    
+    .card { background: var(--white); padding: 20px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
+    .card-highlight { background: var(--black); color: var(--white); border: none; }
+    .card-highlight h2 { color: var(--yellow); }
+
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px; }
+    .nav-item { text-align: center; font-size: 12px; font-weight: bold; color: #666; cursor: pointer; }
+    .nav-item.active { color: var(--black); }
+
+    .hidden { display: none !important; }
+    .text-sm { font-size: 14px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mt-4 { margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+  <!-- AUTH SCREEN -->
+  <div id="auth-screen">
+    <div class="auth-card">
+      <div class="logo">ZG</div>
+      <h1 style="font-size: 24px; margin-bottom: 8px;">Welcome</h1>
+      <p class="text-sm" style="margin-bottom: 24px; color: #666;">Log in to manage your garbage collection.</p>
+      
+      <input type="email" id="email" placeholder="Email Address" required>
+      <input type="password" id="password" placeholder="Password" required>
+      
+      <button class="btn" onclick="handleLogin()" id="login-btn">Log In</button>
+      
+      <div style="text-align: center; margin-top: 16px;">
+        <span class="text-sm" style="color: #666;">Don't have an account? </span>
+        <span class="text-sm" style="font-weight: bold; cursor: pointer; text-decoration: underline;" onclick="handleSignUp()">Sign up</span>
+      </div>
+      <p id="auth-error" style="color: red; font-size: 14px; margin-top: 12px; text-align: center;"></p>
+    </div>
+  </div>
+
+  <!-- APP SCREEN -->
+  <div id="app-screen">
+    <header class="header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="logo" style="margin: 0; width: 36px; height: 36px; font-size: 14px;">ZG</div>
+        <div>
+          <div style="font-weight: bold; font-size: 16px;">Customer Portal</div>
+          <div class="text-sm" id="user-email" style="opacity: 0.7;">loading...</div>
+        </div>
+      </div>
+      <button class="btn btn-outline" style="width: auto; padding: 8px 16px;" onclick="handleLogout()">Log out</button>
+    </header>
+
+    <main class="main-content">
+      <div class="card card-highlight">
+        <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 8px;">Account Balance</h2>
+        <div style="font-size: 32px; font-weight: bold;">ZMW 0.00</div>
+        <p class="text-sm" style="opacity: 0.7; margin-top: 8px;">Your next collection is scheduled soon.</p>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size: 18px; margin-bottom: 16px;">Quick Actions</h2>
+        <button class="btn mb-2" onclick="requestCollection()">Request Pickup</button>
+        <button class="btn btn-outline">Pay Bill (Coming Soon)</button>
+      </div>
+
+      <h2 style="font-size: 18px; margin-bottom: 12px; margin-top: 24px;">Recent Requests</h2>
+      <div id="requests-list"></div>
+    </main>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active">Home</div>
+      <div class="nav-item">History</div>
+      <div class="nav-item">Profile</div>
+    </nav>
+  </div>
+
+  <script>
+    // ==========================================
+    // ⚠️ PASTE YOUR SUPABASE KEYS HERE ⚠️
+    // ==========================================
+    const SUPABASE_URL = 'https://ngyvyldiwzivpvgwyssp.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neXZ5bGRpd3ppdnB2Z3d5c3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1OTM3OTIsImV4cCI6MjExMDE2OTc5Mn0.KjKD1Ca9IcVi6M3hyApk7PH7vywjn5CzJjo4tCHmR-c';
+    
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // AUTHENTICATION
+    async function handleLogin() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('login-btn');
+      const errorEl = document.getElementById('auth-error');
+
+      btn.innerText = 'Logging in...';
+      errorEl.innerText = '';
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        errorEl.innerText = error.message;
+        btn.innerText = 'Log In';
+      } else {
+        showApp(data.user);
+      }
+    }
+
+    async function handleSignUp() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      if (!email || !password) {
+        document.getElementById('auth-error').innerText = 'Please enter email and password.';
+        return;
+      }
+
+      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      if (error) {
+        document.getElementById('auth-error').innerText = error.message;
+      } else {
+        alert('Account created! Logging you in...');
+        if (data.user) showApp(data.user);
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      document.getElementById('app-screen').style.display = 'none';
+      document.getElementById('auth-screen').style.display = 'flex';
+    }
+
+    function showApp(user) {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app-screen').style.display = 'flex';
+      document.getElementById('user-email').innerText = user.email;
+      loadRequests();
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) showApp(session.user);
+    });
+
+    // APP LOGIC
+    async function requestCollection() {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) return;
+
+      // 1. Check if customer record exists
+      let { data: customer } = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
+      
+      // 2. If not, create one
+      if (!customer) {
+        const { data: newCust, error: custErr } = await supabaseClient.from('customers').insert([
+          { 
+            profile_id: user.id, 
+            customer_number: 'C-' + Math.floor(Math.random() * 10000),
+            full_name: user.email.split('@')[0], 
+            phone: '0970000000', 
+            address: 'Default Address' 
+          }
+        ]).select().single();
+        
+        if (custErr) { alert('Error: ' + custErr.message); return; }
+        customer = newCust;
+      }
+
+      // 3. Create request
+      const { error } = await supabaseClient.from('collection_requests').insert([
+        { customer_id: customer.id, status: 'requested', customer_notes: 'Requested via App' }
+      ]);
+
+      if (error) { alert('Error: ' + error.message); } 
+      else { alert('Pickup requested successfully!'); loadRequests(); }
+    }
+
+    async function loadRequests() {
+      const list = document.getElementById('requests-list');
+      const { data: requests, error } = await supabaseClient.from('collection_requests').select('*').order('requested_at', { ascending: false });
+
+      if (error || !requests || requests.length === 0) {
+        list.innerHTML = '<div class="card"><p class="text-sm" style="color: #666;">No collection requests found.</p></div>';
+        return;
+      }
+
+      let html = '';
+      requests.forEach(req => {
+        html += `
+          <div class="card" style="padding: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <strong>Pickup Request</strong>
+              <span style="font-size: 12px; background: #eee; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">${req.status}</span>
+            </div>
+            <div class="text-sm" style="color: #666;">Date: ${new Date(req.requested_at).toLocaleDateString()}</div>
+          </div>
+        `;
+      });
+      list.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
