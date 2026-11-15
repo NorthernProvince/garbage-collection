@@ -23,79 +23,15 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background-color: var(--bg); color: var(--text-main); line-height: 1.5; -webkit-font-smoothing: antialiased; }
     
-    /* --- SCREENS LAYOUT --- */
     .app-view { display: none; height: 100dvh; width: 100vw; overflow: hidden; }
     .app-view.active { display: flex; }
 
-    /* --- PROFESSIONAL LOGIN SCREEN --- */
-    #auth-screen { 
-      align-items: center; 
-      justify-content: center; 
-      padding: 20px; 
-      background: radial-gradient(circle at top right, rgba(255,204,0,0.15), transparent 40%),
-                  radial-gradient(circle at bottom left, rgba(15,23,42,0.05), transparent 40%);
-      background-color: var(--bg);
-    }
-    
-    .login-container {
-      display: flex;
-      width: 100%;
-      max-width: 1000px;
-      height: 600px;
-      background: var(--white);
-      border-radius: 32px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.5);
-      backdrop-filter: blur(20px);
-    }
-
-    .login-sidebar {
-      flex: 1;
-      background: var(--dark);
-      padding: 48px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .login-sidebar::before {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
-      background: radial-gradient(circle, rgba(255,204,0,0.1) 0%, transparent 60%);
-      z-index: 0;
-    }
-
-    .login-form-area {
-      flex: 1;
-      padding: 48px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      background: var(--white);
-    }
-
-    .brand-logo { width: 48px; height: 48px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--dark); z-index: 1; }
-    
-    .input-group { margin-bottom: 20px; }
-    .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
-    input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 15px; background: var(--bg); transition: all 0.2s; }
-    input:focus { outline: none; border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 4px rgba(255,204,0,0.15); }
-    
-    .btn { width: 100%; padding: 16px; background: var(--dark); color: var(--primary); border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: transform 0.1s, opacity 0.2s; display: flex; justify-content: center; align-items: center; }
-    .btn:active { transform: scale(0.98); }
-    .btn:hover { opacity: 0.9; }
-    .btn-outline { background: transparent; color: var(--text-main); border: 1.5px solid var(--border); }
-    
     /* --- CUSTOMER MOBILE APP --- */
     #customer-app { flex-direction: column; background: var(--bg); }
-    
     .mobile-container { width: 100%; max-width: 600px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; background: var(--bg); box-shadow: 0 0 40px rgba(0,0,0,0.05); }
     
     .top-header { background: var(--white); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .brand-logo { width: 44px; height: 44px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: var(--dark); }
     
     .main-content { flex: 1; padding: 24px; overflow-y: auto; padding-bottom: 100px; }
     .card { background: var(--white); padding: 24px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid var(--border); }
@@ -104,6 +40,16 @@
     .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 16px; max-width: 600px; margin: 0 auto; }
     .nav-item { flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; padding: 10px; border-radius: 12px; transition: all 0.2s; }
     .nav-item.active { color: var(--dark); background: rgba(255,204,0,0.15); }
+
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+    input, select { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 15px; background: var(--bg); transition: all 0.2s; font-family: inherit; }
+    input:focus, select:focus { outline: none; border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 4px rgba(255,204,0,0.15); }
+    
+    .btn { width: 100%; padding: 16px; background: var(--dark); color: var(--primary); border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: transform 0.1s, opacity 0.2s; display: flex; justify-content: center; align-items: center; }
+    .btn:active { transform: scale(0.98); }
+    .btn:hover { opacity: 0.9; }
+    .btn-outline { background: transparent; color: var(--text-main); border: 1.5px solid var(--border); }
 
     /* --- ADMIN DESKTOP DASHBOARD --- */
     #admin-app { background: var(--bg); }
@@ -145,12 +91,7 @@
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Mobile Responsiveness for Login */
     @media (max-width: 768px) {
-      .login-container { flex-direction: column; height: auto; border-radius: 24px; }
-      .login-sidebar { display: none; }
-      .login-form-area { padding: 32px 24px; }
-      
       #admin-app { flex-direction: column; }
       .sidebar { width: 100%; flex-direction: row; justify-content: space-between; padding: 16px; }
       .sidebar-menu { display: flex; padding: 0; }
@@ -163,67 +104,20 @@
 <body>
 
   <!-- ========================================== -->
-  <!-- 1. PROFESSIONAL AUTH SCREEN                -->
+  <!-- 1. CUSTOMER APP (NO LOGIN REQUIRED)        -->
   <!-- ========================================== -->
-  <div id="auth-screen" class="app-view active">
-    <div class="login-container">
-      
-      <!-- Left Side (Desktop Only) -->
-      <div class="login-sidebar">
-        <div class="brand-logo">KG</div>
-        <div style="z-index: 1;">
-          <h1 style="color: var(--white); font-size: 32px; font-weight: 800; line-height: 1.1; margin-bottom: 16px;">Kasama Garbage Collection Company</h1>
-          <p style="color: #94A3B8; font-size: 15px;">Manage your pickups, pay bills, and track your collection history seamlessly.</p>
-        </div>
-        <div style="z-index: 1; color: #64748B; font-size: 13px;">
-          &copy; 2024 Kasama Garbage. All rights reserved.
-        </div>
-      </div>
-
-      <!-- Right Side (Form) -->
-      <div class="login-form-area">
-        <div style="margin-bottom: 32px;">
-          <h2 style="font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px;">Welcome back</h2>
-          <p class="text-sm text-muted">Please enter your details to sign in.</p>
-        </div>
-
-        <div class="input-group">
-          <label>Email Address</label>
-          <input type="email" id="email" placeholder="name@example.com" required>
-        </div>
-        
-        <div class="input-group">
-          <label>Password</label>
-          <input type="password" id="password" placeholder="••••••••" required>
-        </div>
-
-        <button class="btn" onclick="handleLogin()" id="login-btn">Sign In</button>
-        
-        <div class="text-center mt-4">
-          <span class="text-sm text-muted">Don't have an account? </span>
-          <span class="text-sm" style="font-weight: 700; color: var(--text-main); cursor: pointer; text-decoration: underline;" onclick="handleSignUp()">Create one</span>
-        </div>
-        <p id="auth-error" style="color: #EF4444; font-size: 14px; margin-top: 16px; font-weight: 500; text-align: center;"></p>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- 2. CUSTOMER MOBILE APP                     -->
-  <!-- ========================================== -->
-  <div id="customer-app" class="app-view">
+  <div id="customer-app" class="app-view active">
     <div class="mobile-container">
       
       <header class="top-header">
         <div style="display: flex; align-items: center; gap: 12px;">
-          <div class="brand-logo" style="width: 40px; height: 40px; font-size: 16px; border-radius: 10px;">KG</div>
+          <div class="brand-logo">KG</div>
           <div>
             <div style="font-weight: 800; font-size: 16px; line-height: 1.2;">Kasama Garbage</div>
-            <div class="text-sm text-muted" id="cust-email" style="font-weight: 500;">loading...</div>
+            <div class="text-sm text-muted" id="cust-id" style="font-weight: 500;">Guest User</div>
           </div>
         </div>
-        <button class="btn btn-outline" style="width: auto; padding: 8px 16px; font-size: 13px; background: var(--bg); border: none;" onclick="handleLogout()">Log out</button>
+        <button class="btn btn-outline" style="width: auto; padding: 8px 16px; font-size: 13px; background: var(--bg); border: none;" onclick="showAdminLogin()">Admin</button>
       </header>
 
       <main class="main-content">
@@ -255,10 +149,10 @@
         <div id="view-profile" class="hidden">
           <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 24px;">My Profile</h2>
           <div class="card">
-            <p class="text-sm text-muted mb-2">Email Address</p>
-            <p class="mb-6" id="profile-email" style="font-weight: 600; font-size: 16px;">-</p>
             <p class="text-sm text-muted mb-2">Customer Number</p>
             <p class="mb-6" id="profile-cust-no" style="font-weight: 600; font-size: 16px;">-</p>
+            <p class="text-sm text-muted mb-2">Full Name</p>
+            <p class="mb-6" id="profile-name" style="font-weight: 600; font-size: 16px;">-</p>
             <p class="text-sm text-muted mb-2">Company</p>
             <p style="font-weight: 600; font-size: 16px;">Kasama Garbage Collection Company</p>
           </div>
@@ -275,6 +169,32 @@
   </div>
 
   <!-- ========================================== -->
+  <!-- 2. ADMIN LOGIN SCREEN (Hidden by default)  -->
+  <!-- ========================================== -->
+  <div id="auth-screen" class="app-view">
+    <div style="width: 100%; max-width: 400px; background: var(--white); padding: 40px 32px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+      <div class="brand-logo mb-4">KG</div>
+      <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Admin Login</h1>
+      <p class="text-sm text-muted mb-6">Sign in to manage Kasama Garbage.</p>
+      
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="admin-email-input" placeholder="admin@kasama.com">
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="admin-password-input" placeholder="••••••••">
+      </div>
+
+      <button class="btn" onclick="handleAdminLogin()" id="login-btn">Sign In</button>
+      <div class="text-center mt-4">
+        <span class="text-sm" style="font-weight: 700; color: var(--text-main); cursor: pointer; text-decoration: underline;" onclick="hideAdminLogin()">Back to Customer App</span>
+      </div>
+      <p id="auth-error" style="color: #EF4444; font-size: 14px; margin-top: 16px; font-weight: 500; text-align: center;"></p>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
   <!-- 3. ADMIN DESKTOP DASHBOARD                 -->
   <!-- ========================================== -->
   <div id="admin-app" class="app-view">
@@ -283,12 +203,12 @@
         <div class="brand-logo" style="background: var(--primary);">KG</div>
         <div>
           <div style="font-weight: 800; font-size: 16px; color: var(--white); margin-top: 12px;">Kasama Admin</div>
-          <div class="text-sm text-muted" id="admin-email">loading...</div>
+          <div class="text-sm text-muted" id="admin-user-email">loading...</div>
         </div>
       </div>
       <div class="sidebar-menu">
         <div class="menu-item active">Payments</div>
-        <div class="menu-item" onclick="handleLogout()" style="color: #EF4444;">Log out</div>
+        <div class="menu-item" onclick="handleAdminLogout()" style="color: #EF4444;">Log out</div>
       </div>
     </div>
     
@@ -298,6 +218,31 @@
         <button class="btn btn-sm" onclick="loadAdminPayments()">Refresh Data</button>
       </div>
       <div id="admin-payments-table"></div>
+    </div>
+  </div>
+
+  <!-- PROFILE SETUP MODAL (For new customers) -->
+  <div class="modal-overlay" id="setup-modal">
+    <div class="modal" style="text-align: left;">
+      <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Welcome!</h2>
+      <p class="text-sm text-muted mb-6">Please enter your details to continue.</p>
+      
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="setup-name" placeholder="John Doe">
+      </div>
+      
+      <div class="input-group">
+        <label>Phone Number</label>
+        <input type="tel" id="setup-phone" placeholder="097 123 4567">
+      </div>
+
+      <div class="input-group">
+        <label>Address / Area</label>
+        <input type="text" id="setup-address" placeholder="e.g. Chikumanino, Kasama">
+      </div>
+      
+      <button class="btn" onclick="saveCustomerProfile()" id="setup-btn">Start Using App</button>
     </div>
   </div>
 
@@ -314,7 +259,7 @@
       
       <div class="input-group">
         <label>Payment Method</label>
-        <select id="pay-method" style="width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 15px; background: var(--bg); font-family: inherit;">
+        <select id="pay-method">
           <option value="mtn_momo">MTN MoMo</option>
           <option value="airtel_money">Airtel Money</option>
           <option value="cash">Cash</option>
@@ -344,6 +289,7 @@
     // ==========================================
     var SUPABASE_URL = 'https://ngyvyldiwzivpvgwyssp.supabase.co';
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neXZ5bGRpd3ppdnB2Z3d5c3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1OTM3OTIsImV4cCI6MjExMDE2OTc5Mn0.KjKD1Ca9IcVi6M3hyApk7PH7vywjn5CzJjo4tCHmR-c';
+
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     var currentUser = null;
     var currentCustomer = null;
@@ -358,69 +304,75 @@
     }
     function closeAlert() { document.getElementById('alert-modal').classList.remove('active'); }
 
-    async function checkSession() {
+    // --- INITIALIZATION (AUTO LOGIN FOR CUSTOMERS) ---
+    async function initApp() {
+      // Check if an Admin is already logged in
       var res = await supabaseClient.auth.getSession();
-      if (res.data.session) { routeUser(res.data.session.user); } 
-    }
+      if (res.data.session) {
+        var user = res.data.session.user;
+        if (user.email === 'alphwila7@gmail.com' || (user.app_metadata && user.app_metadata.provider === 'email')) {
+          // It's an admin session
+          routeAdmin(user);
+          return;
+        }
+      }
 
-    async function handleLogin() {
-      var email = document.getElementById('email').value;
-      var password = document.getElementById('password').value;
-      var btn = document.getElementById('login-btn');
-      var errorEl = document.getElementById('auth-error');
-      btn.innerText = 'Signing in...'; errorEl.innerText = '';
+      // Otherwise, create an anonymous session for the customer
+      var anonRes = await supabaseClient.auth.signInAnonymously();
+      if (anonRes.error) {
+        showAlert('Connection Error', 'Could not connect to database: ' + anonRes.error.message, true);
+        return;
+      }
       
-      var res = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
-      
-      if (res.error) { 
-        errorEl.innerText = res.error.message; btn.innerText = 'Sign In'; 
-      } else { 
-        routeUser(res.data.user); 
+      currentUser = anonRes.data.user;
+      document.getElementById('cust-id').innerText = 'Guest (' + currentUser.id.substring(0,4) + ')';
+
+      // Check if this guest already has a customer record
+      var custRes = await supabaseClient.from('customers').select('*').eq('profile_id', currentUser.id).single();
+      if (custRes.data) {
+        currentCustomer = custRes.data;
+        document.getElementById('cust-id').innerText = currentCustomer.full_name;
+        loadRequests();
+      } else {
+        // Show setup modal so they can enter their details
+        document.getElementById('setup-modal').classList.add('active');
       }
     }
 
-    async function handleSignUp() {
-      var email = document.getElementById('email').value;
-      var password = document.getElementById('password').value;
-      if (!email || !password) { document.getElementById('auth-error').innerText = 'Please enter email and password.'; return; }
-      var res = await supabaseClient.auth.signUp({ email: email, password: password });
-      if (res.error) { document.getElementById('auth-error').innerText = res.error.message; } 
-      else { showAlert('Account Created!', 'Welcome to Kasama Garbage.', false); if (res.data.user) routeUser(res.data.user); }
-    }
-
-    async function handleLogout() {
-      await supabaseClient.auth.signOut();
-      document.getElementById('customer-app').classList.remove('active');
-      document.getElementById('admin-app').classList.remove('active');
-      document.getElementById('auth-screen').classList.add('active');
-    }
-
-    async function routeUser(user) {
-      currentUser = user;
-      document.getElementById('auth-screen').classList.remove('active');
+    // --- CUSTOMER PROFILE SETUP ---
+    async function saveCustomerProfile() {
+      var name = document.getElementById('setup-name').value;
+      var phone = document.getElementById('setup-phone').value;
+      var address = document.getElementById('setup-address').value;
       
-      var isAdmin = false;
-      if (user.email === 'alphwila7@gmail.com') { isAdmin = true; }
-      
-      var profRes = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
-      if (profRes.data && profRes.data.role === 'owner_admin') { isAdmin = true; }
+      if (!name || !phone || !address) { showAlert('Missing Info', 'Please fill in all fields.', true); return; }
 
-      if (isAdmin) {
-        document.getElementById('admin-email').innerText = user.email;
-        document.getElementById('admin-app').classList.add('active');
-        loadAdminPayments();
+      var btn = document.getElementById('setup-btn');
+      btn.innerText = 'Saving...'; btn.disabled = true;
+
+      var randNum = Math.floor(Math.random() * 10000);
+      var res = await supabaseClient.from('customers').insert([{ 
+        profile_id: currentUser.id, 
+        customer_number: 'KG-' + randNum,
+        full_name: name, 
+        phone: phone, 
+        address: address 
+      }]).select().single();
+
+      btn.innerText = 'Start Using App'; btn.disabled = false;
+
+      if (res.error) {
+        showAlert('Error', res.error.message, true);
       } else {
-        document.getElementById('cust-email').innerText = user.email;
-        document.getElementById('customer-app').classList.add('active');
-        
-        var res = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
-        if (res.data) { currentCustomer = res.data; }
-
-        switchView('home');
+        currentCustomer = res.data;
+        document.getElementById('setup-modal').classList.remove('active');
+        document.getElementById('cust-id').innerText = currentCustomer.full_name;
+        showAlert('Welcome!', 'Your profile is ready. You can now request pickups.', false);
         loadRequests();
       }
     }
 
+    // --- CUSTOMER APP LOGIC ---
     function switchView(viewName) {
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-history').classList.add('hidden');
@@ -434,31 +386,18 @@
       document.getElementById('nav-' + viewName).classList.add('active');
 
       if (viewName === 'history') loadPayments();
-      if (viewName === 'profile') loadProfile();
+      if (viewName === 'profile') loadCustomerProfile();
     }
 
-    function loadProfile() {
-      document.getElementById('profile-email').innerText = currentUser.email;
+    function loadCustomerProfile() {
       if (currentCustomer) {
         document.getElementById('profile-cust-no').innerText = currentCustomer.customer_number;
-      } else {
-        document.getElementById('profile-cust-no').innerText = 'No record yet';
+        document.getElementById('profile-name').innerText = currentCustomer.full_name;
       }
     }
 
     async function requestCollection() {
-      if (!currentUser) return;
-      
-      if (!currentCustomer) {
-        var randNum = Math.floor(Math.random() * 10000);
-        var resCust = await supabaseClient.from('customers').insert([{ 
-          profile_id: currentUser.id, customer_number: 'C-' + randNum,
-          full_name: currentUser.email.split('@')[0], phone: '0970000000', address: 'Kasama' 
-        }]).select().single();
-        
-        if (resCust.error) { showAlert('Database Error', resCust.error.message, true); return; }
-        currentCustomer = resCust.data;
-      }
+      if (!currentCustomer) { document.getElementById('setup-modal').classList.add('active'); return; }
 
       var resReq = await supabaseClient.from('collection_requests').insert([
         { customer_id: currentCustomer.id, status: 'requested', customer_notes: 'Requested via App' }
@@ -474,7 +413,11 @@
 
     async function loadRequests() {
       var list = document.getElementById('requests-list');
-      var res = await supabaseClient.from('collection_requests').select('*').order('requested_at', { ascending: false });
+      if (!currentCustomer) {
+        list.innerHTML = '<div class="card"><p class="text-sm text-muted">Complete your profile to see requests.</p></div>';
+        return;
+      }
+      var res = await supabaseClient.from('collection_requests').select('*').eq('customer_id', currentCustomer.id).order('requested_at', { ascending: false });
 
       if (res.error || !res.data || res.data.length === 0) {
         list.innerHTML = '<div class="card"><p class="text-sm text-muted">No collection requests found.</p></div>';
@@ -493,7 +436,10 @@
       list.innerHTML = html;
     }
 
-    function openPayModal() { document.getElementById('pay-modal').classList.add('active'); }
+    function openPayModal() { 
+      if (!currentCustomer) { document.getElementById('setup-modal').classList.add('active'); return; }
+      document.getElementById('pay-modal').classList.add('active'); 
+    }
     function closePayModal() { document.getElementById('pay-modal').classList.remove('active'); document.getElementById('pay-amount').value = ''; }
 
     async function submitPayment() {
@@ -501,7 +447,6 @@
       var method = document.getElementById('pay-method').value;
       
       if (!amount || amount <= 0) { showAlert('Invalid Amount', 'Please enter a valid amount.', true); return; }
-      if (!currentCustomer) { showAlert('Action Required', 'Please request a pickup first.', true); return; }
 
       var btn = document.getElementById('pay-btn');
       btn.innerText = 'Processing...'; btn.disabled = true;
@@ -540,6 +485,53 @@
         html += '<div class="text-sm text-muted">Date: ' + dateStr + '</div></div>';
       });
       list.innerHTML = html;
+    }
+
+    // --- ADMIN LOGIC ---
+    function showAdminLogin() {
+      document.getElementById('customer-app').classList.remove('active');
+      document.getElementById('auth-screen').classList.add('active');
+    }
+
+    function hideAdminLogin() {
+      document.getElementById('auth-screen').classList.remove('active');
+      document.getElementById('customer-app').classList.add('active');
+    }
+
+    async function handleAdminLogin() {
+      var email = document.getElementById('admin-email-input').value;
+      var password = document.getElementById('admin-password-input').value;
+      var btn = document.getElementById('login-btn');
+      var errorEl = document.getElementById('auth-error');
+      btn.innerText = 'Signing in...'; errorEl.innerText = '';
+      
+      var res = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+      
+      if (res.error) { 
+        errorEl.innerText = res.error.message; btn.innerText = 'Sign In'; 
+      } else { 
+        if (res.data.user.email === 'alphwila7@gmail.com') {
+          routeAdmin(res.data.user);
+        } else {
+          errorEl.innerText = 'You do not have admin access.';
+          btn.innerText = 'Sign In';
+          await supabaseClient.auth.signOut(); // Log them out if they aren't admin
+        }
+      }
+    }
+
+    function routeAdmin(user) {
+      document.getElementById('customer-app').classList.remove('active');
+      document.getElementById('auth-screen').classList.remove('active');
+      document.getElementById('admin-app').classList.add('active');
+      document.getElementById('admin-user-email').innerText = user.email;
+      loadAdminPayments();
+    }
+
+    async function handleAdminLogout() {
+      await supabaseClient.auth.signOut();
+      document.getElementById('admin-app').classList.remove('active');
+      window.location.reload(); // Reloads app as a guest
     }
 
     async function loadAdminPayments() {
@@ -587,9 +579,9 @@
       else { showAlert('Approved!', 'The payment has been successfully confirmed.', false); loadAdminPayments(); }
     }
 
+    // Start App
     window.addEventListener('DOMContentLoaded', function() { 
-      document.getElementById('auth-screen').classList.add('active');
-      checkSession(); 
+      initApp(); 
     });
   </script>
 </body>
