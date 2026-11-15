@@ -11,49 +11,66 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--gray); color: var(--black); line-height: 1.5; }
     
-    #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .auth-card { background: var(--white); padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    .screen { display: none; height: 100vh; align-items: center; justify-content: center; padding: 20px; }
+    .screen.active { display: flex; }
+    .card { background: var(--white); padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
     .logo { width: 50px; height: 50px; background: var(--yellow); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; margin-bottom: 20px; }
     
-    #app-screen { display: none; height: 100vh; flex-direction: column; }
-    .header { background: var(--yellow); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-    .main-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 80px; }
-
-    input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; font-family: inherit; }
+    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; font-family: inherit; background: var(--white); }
     .btn { width: 100%; padding: 14px; background: var(--black); color: var(--yellow); border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; transition: opacity 0.2s; }
     .btn:hover { opacity: 0.8; }
     .btn-outline { background: transparent; color: var(--black); border: 1px solid var(--border); }
     
-    .card { background: var(--white); padding: 20px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
-    .card-highlight { background: var(--black); color: var(--white); border: none; }
-    .card-highlight h2 { color: var(--yellow); }
-
+    /* App Layout */
+    #app-screen { display: none; height: 100vh; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 0; }
+    #app-screen.active { display: flex; }
+    .header { background: var(--yellow); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .main-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 80px; }
+    .card-app { background: var(--white); padding: 20px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
+    
+    /* Bottom Nav */
     .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px; }
-    .nav-item { text-align: center; font-size: 12px; font-weight: bold; color: #666; cursor: pointer; }
-    .nav-item.active { color: var(--black); }
+    .nav-item { text-align: center; font-size: 14px; font-weight: bold; color: #666; cursor: pointer; padding: 8px 16px; border-radius: 8px; }
+    .nav-item.active { color: var(--black); background: rgba(0,0,0,0.05); }
 
-    .hidden { display: none !important; }
+    /* Modals */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: var(--white); padding: 24px; border-radius: 20px; width: 100%; max-width: 400px; }
+
     .text-sm { font-size: 14px; }
+    .text-center { text-align: center; }
     .mb-2 { margin-bottom: 8px; }
     .mb-4 { margin-bottom: 16px; }
     .mt-4 { margin-top: 16px; }
+    .hidden { display: none !important; }
+    .page-title { font-size: 24px; font-weight: bold; margin-bottom: 16px; }
   </style>
 </head>
 <body>
 
+  <!-- SETUP SCREEN -->
+  <div id="setup-screen" class="screen active">
+    <div class="card">
+      <div class="logo">ZG</div>
+      <h1 style="font-size: 24px; margin-bottom: 8px;">Connect Database</h1>
+      <p class="text-sm" style="margin-bottom: 24px; color: #666;">Paste your Supabase Project URL and Anon Key below.</p>
+      <input type="url" id="sb-url" placeholder="https://xxxxxxx.supabase.co" required>
+      <input type="text" id="sb-key" placeholder="eyJhbGciOi..." required>
+      <button class="btn" onclick="saveDatabaseKeys()">Connect & Save</button>
+    </div>
+  </div>
+
   <!-- AUTH SCREEN -->
-  <div id="auth-screen">
-    <div class="auth-card">
+  <div id="auth-screen" class="screen">
+    <div class="card">
       <div class="logo">ZG</div>
       <h1 style="font-size: 24px; margin-bottom: 8px;">Welcome</h1>
       <p class="text-sm" style="margin-bottom: 24px; color: #666;">Log in to manage your garbage collection.</p>
-      
       <input type="email" id="email" placeholder="Email Address" required>
       <input type="password" id="password" placeholder="Password" required>
-      
       <button class="btn" onclick="handleLogin()" id="login-btn">Log In</button>
-      
-      <div style="text-align: center; margin-top: 16px;">
+      <div class="text-center mt-4">
         <span class="text-sm" style="color: #666;">Don't have an account? </span>
         <span class="text-sm" style="font-weight: bold; cursor: pointer; text-decoration: underline;" onclick="handleSignUp()">Sign up</span>
       </div>
@@ -75,124 +92,207 @@
     </header>
 
     <main class="main-content">
-      <div class="card card-highlight">
-        <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 8px;">Account Balance</h2>
-        <div style="font-size: 32px; font-weight: bold;">ZMW 0.00</div>
-        <p class="text-sm" style="opacity: 0.7; margin-top: 8px;">Your next collection is scheduled soon.</p>
+      <!-- HOME VIEW -->
+      <div id="view-home">
+        <div class="card-app" style="background: var(--black); color: white;">
+          <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 8px; color: var(--yellow);">Account Balance</h2>
+          <div style="font-size: 32px; font-weight: bold;">ZMW 0.00</div>
+          <p class="text-sm" style="opacity: 0.7; margin-top: 8px;">Your next collection is scheduled soon.</p>
+        </div>
+
+        <div class="card-app">
+          <h2 style="font-size: 18px; margin-bottom: 16px;">Quick Actions</h2>
+          <button class="btn mb-2" onclick="requestCollection()">Request Pickup</button>
+          <button class="btn btn-outline" onclick="openPayModal()">Pay Bill</button>
+        </div>
+
+        <h2 class="page-title mt-4">Recent Requests</h2>
+        <div id="requests-list"></div>
       </div>
 
-      <div class="card">
-        <h2 style="font-size: 18px; margin-bottom: 16px;">Quick Actions</h2>
-        <button class="btn mb-2" onclick="requestCollection()">Request Pickup</button>
-        <button class="btn btn-outline">Pay Bill (Coming Soon)</button>
+      <!-- HISTORY VIEW -->
+      <div id="view-history" class="hidden">
+        <h2 class="page-title">Payment History</h2>
+        <div id="payments-list"></div>
       </div>
 
-      <h2 style="font-size: 18px; margin-bottom: 12px; margin-top: 24px;">Recent Requests</h2>
-      <div id="requests-list"></div>
+      <!-- PROFILE VIEW -->
+      <div id="view-profile" class="hidden">
+        <h2 class="page-title">My Profile</h2>
+        <div class="card-app">
+          <p class="text-sm text-sm mb-2" style="color: #666;">Email Address</p>
+          <p class="mb-4" id="profile-email" style="font-weight: bold;">-</p>
+          
+          <p class="text-sm mb-2" style="color: #666;">Customer Number</p>
+          <p class="mb-4" id="profile-cust-no" style="font-weight: bold;">-</p>
+
+          <p class="text-sm mb-2" style="color: #666;">Full Name</p>
+          <p id="profile-name" style="font-weight: bold;">-</p>
+        </div>
+      </div>
     </main>
 
+    <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav">
-      <div class="nav-item active">Home</div>
-      <div class="nav-item">History</div>
-      <div class="nav-item">Profile</div>
+      <div class="nav-item active" id="nav-home" onclick="switchView('home')">Home</div>
+      <div class="nav-item" id="nav-history" onclick="switchView('history')">History</div>
+      <div class="nav-item" id="nav-profile" onclick="switchView('profile')">Profile</div>
     </nav>
   </div>
 
-  <script>
-    // ==========================================
-    // ⚠️ PASTE YOUR SUPABASE KEYS HERE ⚠️
-    // ==========================================
-    const SUPABASE_URL = 'https://ngyvyldiwzivpvgwyssp.supabase.co'; 
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neXZ5bGRpd3ppdnB2Z3d5c3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1OTM3OTIsImV4cCI6MjExMDE2OTc5Mn0.KjKD1Ca9IcVi6M3hyApk7PH7vywjn5CzJjo4tCHmR-c';
-    
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <!-- PAY BILL MODAL -->
+  <div class="modal-overlay" id="pay-modal">
+    <div class="modal">
+      <h2 style="font-size: 20px; margin-bottom: 8px;">Pay Bill</h2>
+      <p class="text-sm" style="color: #666; margin-bottom: 20px;">Enter the amount you wish to pay. (Note: This records the payment in the database, but does not deduct real money yet).</p>
+      
+      <label class="text-sm" style="font-weight: bold;">Amount (ZMW)</label>
+      <input type="number" id="pay-amount" placeholder="e.g. 200" style="margin-top: 4px;">
+      
+      <label class="text-sm" style="font-weight: bold;">Payment Method</label>
+      <select id="pay-method" style="margin-top: 4px;">
+        <option value="mtn_momo">MTN MoMo</option>
+        <option value="airtel_money">Airtel Money</option>
+        <option value="cash">Cash</option>
+      </select>
+      
+      <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <button class="btn btn-outline" onclick="closePayModal()">Cancel</button>
+        <button class="btn" onclick="submitPayment()" id="pay-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
 
-    // AUTHENTICATION
+  <script>
+    let supabaseClient = null;
+    let currentUser = null;
+    let currentCustomer = null;
+
+    // --- DATABASE CONNECTION ---
+    function saveDatabaseKeys() {
+      const url = document.getElementById('sb-url').value.trim();
+      const key = document.getElementById('sb-key').value.trim();
+      if (!url || !key) { alert('Please enter both URL and Key.'); return; }
+      localStorage.setItem('zg-db-url', url);
+      localStorage.setItem('zg-db-key', key);
+      initSupabase();
+    }
+
+    function initSupabase() {
+      const url = localStorage.getItem('zg-db-url');
+      const key = localStorage.getItem('zg-db-key');
+      if (url && key) {
+        supabaseClient = window.supabase.createClient(url, key);
+        document.getElementById('setup-screen').classList.remove('active');
+        document.getElementById('auth-screen').classList.add('active');
+        checkSession();
+      }
+    }
+
+    // --- AUTHENTICATION ---
+    async function checkSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) showApp(session.user);
+    }
+
     async function handleLogin() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const btn = document.getElementById('login-btn');
       const errorEl = document.getElementById('auth-error');
-
       btn.innerText = 'Logging in...';
       errorEl.innerText = '';
-
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        errorEl.innerText = error.message;
-        btn.innerText = 'Log In';
-      } else {
-        showApp(data.user);
-      }
+      if (error) { errorEl.innerText = error.message; btn.innerText = 'Log In'; } 
+      else { showApp(data.user); }
     }
 
     async function handleSignUp() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      if (!email || !password) {
-        document.getElementById('auth-error').innerText = 'Please enter email and password.';
-        return;
-      }
-
+      if (!email || !password) { document.getElementById('auth-error').innerText = 'Please enter email and password.'; return; }
       const { data, error } = await supabaseClient.auth.signUp({ email, password });
-      if (error) {
-        document.getElementById('auth-error').innerText = error.message;
-      } else {
-        alert('Account created! Logging you in...');
-        if (data.user) showApp(data.user);
-      }
+      if (error) { document.getElementById('auth-error').innerText = error.message; } 
+      else { alert('Account created!'); if (data.user) showApp(data.user); }
     }
 
     async function handleLogout() {
       await supabaseClient.auth.signOut();
-      document.getElementById('app-screen').style.display = 'none';
-      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('app-screen').classList.remove('active');
+      document.getElementById('auth-screen').classList.add('active');
     }
 
-    function showApp(user) {
-      document.getElementById('auth-screen').style.display = 'none';
-      document.getElementById('app-screen').style.display = 'flex';
+    // --- NAVIGATION ---
+    function switchView(viewName) {
+      // Hide all views
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-history').classList.add('hidden');
+      document.getElementById('view-profile').classList.add('hidden');
+      
+      // Reset nav active states
+      document.getElementById('nav-home').classList.remove('active');
+      document.getElementById('nav-history').classList.remove('active');
+      document.getElementById('nav-profile').classList.remove('active');
+      
+      // Show selected view
+      document.getElementById('view-' + viewName).classList.remove('hidden');
+      document.getElementById('nav-' + viewName).classList.add('active');
+
+      // Load data for that view
+      if (viewName === 'history') loadPayments();
+      if (viewName === 'profile') loadProfile();
+    }
+
+    // --- APP LOGIC ---
+    async function showApp(user) {
+      currentUser = user;
+      document.getElementById('auth-screen').classList.remove('active');
+      document.getElementById('app-screen').classList.add('active');
       document.getElementById('user-email').innerText = user.email;
+      
+      // Fetch customer record if it exists
+      let { data: customer } = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
+      currentCustomer = customer;
+
+      switchView('home');
       loadRequests();
     }
 
-    window.addEventListener('DOMContentLoaded', async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) showApp(session.user);
-    });
+    async function loadProfile() {
+      document.getElementById('profile-email').innerText = currentUser.email;
+      if (currentCustomer) {
+        document.getElementById('profile-cust-no').innerText = currentCustomer.customer_number;
+        document.getElementById('profile-name').innerText = currentCustomer.full_name;
+      } else {
+        document.getElementById('profile-cust-no').innerText = 'No customer record yet';
+        document.getElementById('profile-name').innerText = 'Request a pickup to create profile';
+      }
+    }
 
-    // APP LOGIC
     async function requestCollection() {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (!user) return;
-
-      // 1. Check if customer record exists
-      let { data: customer } = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
+      if (!currentUser) return;
       
-      // 2. If not, create one
-      if (!customer) {
+      // Ensure customer record exists
+      if (!currentCustomer) {
         const { data: newCust, error: custErr } = await supabaseClient.from('customers').insert([
           { 
-            profile_id: user.id, 
+            profile_id: currentUser.id, 
             customer_number: 'C-' + Math.floor(Math.random() * 10000),
-            full_name: user.email.split('@')[0], 
+            full_name: currentUser.email.split('@')[0], 
             phone: '0970000000', 
             address: 'Default Address' 
           }
         ]).select().single();
-        
-        if (custErr) { alert('Error: ' + custErr.message); return; }
-        customer = newCust;
+        if (custErr) { alert('Error creating profile: ' + custErr.message); return; }
+        currentCustomer = newCust;
       }
 
-      // 3. Create request
       const { error } = await supabaseClient.from('collection_requests').insert([
-        { customer_id: customer.id, status: 'requested', customer_notes: 'Requested via App' }
+        { customer_id: currentCustomer.id, status: 'requested', customer_notes: 'Requested via App' }
       ]);
 
       if (error) { alert('Error: ' + error.message); } 
-      else { alert('Pickup requested successfully!'); loadRequests(); }
+      else { alert('Pickup requested!'); loadRequests(); }
     }
 
     async function loadRequests() {
@@ -200,14 +300,14 @@
       const { data: requests, error } = await supabaseClient.from('collection_requests').select('*').order('requested_at', { ascending: false });
 
       if (error || !requests || requests.length === 0) {
-        list.innerHTML = '<div class="card"><p class="text-sm" style="color: #666;">No collection requests found.</p></div>';
+        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No collection requests found.</p></div>';
         return;
       }
 
       let html = '';
       requests.forEach(req => {
         html += `
-          <div class="card" style="padding: 16px;">
+          <div class="card-app" style="padding: 16px;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
               <strong>Pickup Request</strong>
               <span style="font-size: 12px; background: #eee; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">${req.status}</span>
@@ -218,6 +318,83 @@
       });
       list.innerHTML = html;
     }
+
+    // --- PAYMENTS ---
+    function openPayModal() {
+      document.getElementById('pay-modal').classList.add('active');
+    }
+    function closePayModal() {
+      document.getElementById('pay-modal').classList.remove('active');
+      document.getElementById('pay-amount').value = '';
+    }
+
+    async function submitPayment() {
+      const amount = parseFloat(document.getElementById('pay-amount').value);
+      const method = document.getElementById('pay-method').value;
+      
+      if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
+      if (!currentCustomer) { alert('Please request a pickup first to create your customer profile.'); return; }
+
+      const btn = document.getElementById('pay-btn');
+      btn.innerText = 'Processing...';
+      btn.disabled = true;
+
+      const { error } = await supabaseClient.from('payments').insert([
+        { 
+          customer_id: currentCustomer.id, 
+          amount_zmw: amount, 
+          method: method, 
+          status: 'pending' 
+        }
+      ]);
+
+      btn.innerText = 'Confirm';
+      btn.disabled = false;
+
+      if (error) {
+        alert('Error: ' + error.message);
+      } else {
+        alert('Payment recorded! It is now pending confirmation by the administrator.');
+        closePayModal();
+      }
+    }
+
+    async function loadPayments() {
+      const list = document.getElementById('payments-list');
+      if (!currentCustomer) {
+        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payment history.</p></div>';
+        return;
+      }
+
+      const { data: payments, error } = await supabaseClient
+        .from('payments')
+        .select('*')
+        .eq('customer_id', currentCustomer.id)
+        .order('payment_date', { ascending: false });
+
+      if (error || !payments || payments.length === 0) {
+        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payments recorded yet.</p></div>';
+        return;
+      }
+
+      let html = '';
+      payments.forEach(pay => {
+        let statusColor = pay.status === 'confirmed' ? '#10B981' : '#F59E0B';
+        html += `
+          <div class="card-app" style="padding: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <strong>ZMW ${pay.amount_zmw.toFixed(2)}</strong>
+              <span style="font-size: 12px; color: white; background: ${statusColor}; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">${pay.status}</span>
+            </div>
+            <div class="text-sm" style="color: #666;">Method: ${pay.method.toUpperCase()}</div>
+            <div class="text-sm" style="color: #666;">Date: ${new Date(pay.payment_date).toLocaleDateString()}</div>
+          </div>
+        `;
+      });
+      list.innerHTML = html;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { initSupabase(); });
   </script>
 </body>
 </html>
