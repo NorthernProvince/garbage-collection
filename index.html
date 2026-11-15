@@ -11,33 +11,53 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--gray); color: var(--black); line-height: 1.5; }
     
+    /* --- LOGIN SCREEN --- */
     .screen { display: none; height: 100vh; align-items: center; justify-content: center; padding: 20px; }
     .screen.active { display: flex; }
     .card { background: var(--white); padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
     .logo { width: 50px; height: 50px; background: var(--yellow); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; margin-bottom: 20px; }
-    
     input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; font-family: inherit; background: var(--white); }
     .btn { width: 100%; padding: 14px; background: var(--black); color: var(--yellow); border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; transition: opacity 0.2s; }
     .btn:hover { opacity: 0.8; }
     .btn-outline { background: transparent; color: var(--black); border: 1px solid var(--border); }
     
-    /* App Layout */
-    #app-screen { display: none; height: 100vh; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 0; }
-    #app-screen.active { display: flex; }
+    /* --- CUSTOMER APP LAYOUT (Mobile) --- */
+    #customer-app { display: none; height: 100vh; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 0; }
+    #customer-app.active { display: flex; }
     .header { background: var(--yellow); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
     .main-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 80px; }
     .card-app { background: var(--white); padding: 20px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
     
-    /* Bottom Nav */
     .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px; }
     .nav-item { text-align: center; font-size: 14px; font-weight: bold; color: #666; cursor: pointer; padding: 8px 16px; border-radius: 8px; }
     .nav-item.active { color: var(--black); background: rgba(0,0,0,0.05); }
 
-    /* Modals */
+    /* --- ADMIN DASHBOARD LAYOUT (Desktop) --- */
+    #admin-app { display: none; height: 100vh; background: #F0F2F5; }
+    #admin-app.active { display: flex; }
+    
+    .sidebar { width: 250px; background: var(--black); color: var(--white); display: flex; flex-direction: column; }
+    .sidebar-header { padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 12px; }
+    .sidebar-menu { padding: 16px; flex: 1; }
+    .menu-item { padding: 12px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; color: #A0A0A0; margin-bottom: 4px; }
+    .menu-item.active { background: rgba(255, 204, 0, 0.1); color: var(--yellow); }
+    
+    .admin-main { flex: 1; padding: 32px; overflow-y: auto; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    
+    .data-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .data-table th, .data-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table th { background: #FAFAFA; font-weight: 600; color: #666; font-size: 14px; text-transform: uppercase; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+    .status-pending { background: #FEF3C7; color: #D97706; }
+    .status-confirmed { background: #D1FAE5; color: #059669; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; width: auto; }
+
+    /* --- MODALS --- */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
     .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
     .modal { background: var(--white); padding: 32px 24px; border-radius: 24px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    
     .modal-icon { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; }
     .modal-icon.success { background: #E8F5E9; color: #10B981; }
     .modal-icon.error { background: #FFEBEE; color: #EF4444; }
@@ -56,12 +76,14 @@
 </head>
 <body>
 
-  <!-- AUTH SCREEN -->
+  <!-- ========================================== -->
+  <!-- 1. AUTH SCREEN (Shared by both)            -->
+  <!-- ========================================== -->
   <div id="auth-screen" class="screen active">
     <div class="card">
       <div class="logo">ZG</div>
       <h1 style="font-size: 24px; margin-bottom: 8px;">Welcome</h1>
-      <p class="text-sm" style="margin-bottom: 24px; color: #666;">Log in to manage your garbage collection.</p>
+      <p class="text-sm" style="margin-bottom: 24px; color: #666;">Log in to manage your account.</p>
       <input type="email" id="email" placeholder="Email Address" required>
       <input type="password" id="password" placeholder="Password" required>
       <button class="btn" onclick="handleLogin()" id="login-btn">Log In</button>
@@ -73,26 +95,27 @@
     </div>
   </div>
 
-  <!-- APP SCREEN -->
-  <div id="app-screen">
+  <!-- ========================================== -->
+  <!-- 2. CUSTOMER MOBILE APP                     -->
+  <!-- ========================================== -->
+  <div id="customer-app">
     <header class="header">
       <div style="display: flex; align-items: center; gap: 12px;">
         <div class="logo" style="margin: 0; width: 36px; height: 36px; font-size: 14px;">ZG</div>
         <div>
-          <div style="font-weight: bold; font-size: 16px;" id="header-title">Customer Portal</div>
-          <div class="text-sm" id="user-email" style="opacity: 0.7;">loading...</div>
+          <div style="font-weight: bold; font-size: 16px;">Customer Portal</div>
+          <div class="text-sm" id="cust-email" style="opacity: 0.7;">loading...</div>
         </div>
       </div>
       <button class="btn btn-outline" style="width: auto; padding: 8px 16px;" onclick="handleLogout()">Log out</button>
     </header>
 
     <main class="main-content">
-      <!-- HOME VIEW (Customer) -->
+      <!-- HOME VIEW -->
       <div id="view-home">
         <div class="card-app" style="background: var(--black); color: white;">
           <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 8px; color: var(--yellow);">Account Balance</h2>
           <div style="font-size: 32px; font-weight: bold;">ZMW 0.00</div>
-          <p class="text-sm" style="opacity: 0.7; margin-top: 8px;">Your next collection is scheduled soon.</p>
         </div>
 
         <div class="card-app">
@@ -105,7 +128,7 @@
         <div id="requests-list"></div>
       </div>
 
-      <!-- HISTORY VIEW (Customer) -->
+      <!-- HISTORY VIEW -->
       <div id="view-history" class="hidden">
         <h2 class="page-title">Payment History</h2>
         <div id="payments-list"></div>
@@ -117,48 +140,59 @@
         <div class="card-app">
           <p class="text-sm mb-2" style="color: #666;">Email Address</p>
           <p class="mb-4" id="profile-email" style="font-weight: bold;">-</p>
-          
           <p class="text-sm mb-2" style="color: #666;">Customer Number</p>
           <p class="mb-4" id="profile-cust-no" style="font-weight: bold;">-</p>
-
-          <p class="text-sm mb-2" style="color: #666;">Full Name</p>
-          <p id="profile-name" style="font-weight: bold;">-</p>
         </div>
-      </div>
-
-      <!-- ADMIN VIEW (Only visible to owner_admin) -->
-      <div id="view-admin" class="hidden">
-        <h2 class="page-title">Admin Dashboard</h2>
-        <p class="text-sm mb-4" style="color: #666;">Manage pending payments below.</p>
-        <div id="admin-payments-list"></div>
       </div>
     </main>
 
-    <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav">
       <div class="nav-item active" id="nav-home" onclick="switchView('home')">Home</div>
       <div class="nav-item" id="nav-history" onclick="switchView('history')">History</div>
       <div class="nav-item" id="nav-profile" onclick="switchView('profile')">Profile</div>
-      <div class="nav-item hidden" id="nav-admin" onclick="switchView('admin')">Admin</div>
     </nav>
   </div>
 
-  <!-- PAY BILL MODAL -->
+  <!-- ========================================== -->
+  <!-- 3. ADMIN DESKTOP DASHBOARD                 -->
+  <!-- ========================================== -->
+  <div id="admin-app">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo" style="margin: 0; width: 36px; height: 36px; font-size: 14px;">ZG</div>
+        <div>
+          <div style="font-weight: bold; font-size: 16px; color: var(--white);">Admin Panel</div>
+          <div class="text-sm" id="admin-email" style="opacity: 0.7;">loading...</div>
+        </div>
+      </div>
+      <div class="sidebar-menu">
+        <div class="menu-item active">Payments</div>
+        <div class="menu-item" onclick="handleLogout()" style="color: #EF4444; margin-top: 24px;">Log out</div>
+      </div>
+    </div>
+    
+    <div class="admin-main">
+      <div class="admin-header">
+        <h1 style="font-size: 28px; font-weight: bold;">Payment Approvals</h1>
+        <button class="btn btn-sm" onclick="loadAdminPayments()">Refresh Data</button>
+      </div>
+      <div id="admin-payments-table"></div>
+    </div>
+  </div>
+
+  <!-- PAY BILL MODAL (Customer) -->
   <div class="modal-overlay" id="pay-modal">
     <div class="modal" style="text-align: left;">
       <h2 style="font-size: 20px; margin-bottom: 8px;">Pay Bill</h2>
       <p class="text-sm" style="color: #666; margin-bottom: 20px;">Enter the amount you wish to pay.</p>
-      
       <label class="text-sm" style="font-weight: bold;">Amount (ZMW)</label>
       <input type="number" id="pay-amount" placeholder="e.g. 200" style="margin-top: 4px;">
-      
       <label class="text-sm" style="font-weight: bold;">Payment Method</label>
       <select id="pay-method" style="margin-top: 4px;">
         <option value="mtn_momo">MTN MoMo</option>
         <option value="airtel_money">Airtel Money</option>
         <option value="cash">Cash</option>
       </select>
-      
       <div style="display: flex; gap: 8px; margin-top: 16px;">
         <button class="btn btn-outline" onclick="closePayModal()">Cancel</button>
         <button class="btn" onclick="submitPayment()" id="pay-btn">Confirm</button>
@@ -171,7 +205,7 @@
     <div class="modal">
       <div class="modal-icon success" id="alert-icon">✓</div>
       <h2 id="alert-title" style="font-size: 20px; margin-bottom: 8px;">Success!</h2>
-      <p id="alert-message" class="text-sm" style="color: #666; margin-bottom: 24px;">Your action was completed successfully.</p>
+      <p id="alert-message" class="text-sm" style="color: #666; margin-bottom: 24px;">Action completed.</p>
       <button class="btn" onclick="closeAlert()">Got it</button>
     </div>
   </div>
@@ -180,13 +214,14 @@
     // ==========================================
     // ⚠️ PASTE YOUR KEYS HERE ⚠️
     // ==========================================
-    var SUPABASE_URL = 'https://ngyvyldiwzivpvgwyssp.supabase.co';
-    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neXZ5bGRpd3ppdnB2Z3d5c3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1OTM3OTIsImV4cCI6MjExMDE2OTc5Mn0.KjKD1Ca9IcVi6M3hyApk7PH7vywjn5CzJjo4tCHmR-c';
+    var SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL_HERE';
+    var SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
 
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     var currentUser = null;
     var currentCustomer = null;
 
+    // --- UTILS ---
     function showAlert(title, message, isError) {
       document.getElementById('alert-title').innerText = title;
       document.getElementById('alert-message').innerText = message;
@@ -197,9 +232,10 @@
     }
     function closeAlert() { document.getElementById('alert-modal').classList.remove('active'); }
 
+    // --- AUTH & ROUTING ---
     async function checkSession() {
       var res = await supabaseClient.auth.getSession();
-      if (res.data.session) { showApp(res.data.session.user); }
+      if (res.data.session) { routeUser(res.data.session.user); }
     }
 
     async function handleLogin() {
@@ -214,7 +250,7 @@
       if (res.error) { 
         errorEl.innerText = res.error.message; btn.innerText = 'Log In'; 
       } else { 
-        showApp(res.data.user); 
+        routeUser(res.data.user); 
       }
     }
 
@@ -224,76 +260,73 @@
       if (!email || !password) { document.getElementById('auth-error').innerText = 'Please enter email and password.'; return; }
       var res = await supabaseClient.auth.signUp({ email: email, password: password });
       if (res.error) { document.getElementById('auth-error').innerText = res.error.message; } 
-      else { showAlert('Account Created!', 'Welcome to Zambia Garbage Collection.', false); if (res.data.user) showApp(res.data.user); }
+      else { showAlert('Account Created!', 'Welcome to Zambia Garbage Collection.', false); if (res.data.user) routeUser(res.data.user); }
     }
 
     async function handleLogout() {
       await supabaseClient.auth.signOut();
-      document.getElementById('app-screen').classList.remove('active');
+      document.getElementById('customer-app').classList.remove('active');
+      document.getElementById('admin-app').classList.remove('active');
       document.getElementById('auth-screen').classList.add('active');
     }
 
+    // THIS IS THE MOST IMPORTANT FUNCTION
+    async function routeUser(user) {
+      currentUser = user;
+      document.getElementById('auth-screen').classList.remove('active');
+      
+      // 1. Check role
+      var isAdmin = false;
+      var profRes = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+      
+      if (profRes.data && profRes.data.role === 'owner_admin') {
+        isAdmin = true;
+      } else if (user.email === 'alphwila7@gmail.com') {
+        // Fallback: If you are logged in with the owner email, force admin
+        isAdmin = true;
+      }
+
+      // 2. Route to correct screen
+      if (isAdmin) {
+        document.getElementById('admin-email').innerText = user.email;
+        document.getElementById('admin-app').classList.add('active');
+        loadAdminPayments();
+      } else {
+        document.getElementById('cust-email').innerText = user.email;
+        document.getElementById('customer-app').classList.add('active');
+        
+        // Fetch customer data
+        var res = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
+        if (res.data) { currentCustomer = res.data; }
+
+        switchView('home');
+        loadRequests();
+      }
+    }
+
+    // --- CUSTOMER LOGIC ---
     function switchView(viewName) {
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-history').classList.add('hidden');
       document.getElementById('view-profile').classList.add('hidden');
-      document.getElementById('view-admin').classList.add('hidden');
       
       document.getElementById('nav-home').classList.remove('active');
       document.getElementById('nav-history').classList.remove('active');
       document.getElementById('nav-profile').classList.remove('active');
-      document.getElementById('nav-admin').classList.remove('active');
       
       document.getElementById('view-' + viewName).classList.remove('hidden');
       document.getElementById('nav-' + viewName).classList.add('active');
 
       if (viewName === 'history') loadPayments();
       if (viewName === 'profile') loadProfile();
-      if (viewName === 'admin') loadAdminPayments();
-    }
-
-    async function showApp(user) {
-      currentUser = user;
-      document.getElementById('auth-screen').classList.remove('active');
-      document.getElementById('app-screen').classList.add('active');
-      document.getElementById('user-email').innerText = user.email;
-      
-      // 1. Check if user is admin (Checking auth metadata first, then database profile)
-      var isAdmin = false;
-      
-      if (user.app_metadata && user.app_metadata.role === 'owner_admin') {
-        isAdmin = true;
-      } else {
-        var profRes = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
-        if (profRes.data && profRes.data.role === 'owner_admin') {
-          isAdmin = true;
-        }
-      }
-
-      if (isAdmin) {
-        document.getElementById('nav-admin').classList.remove('hidden');
-        document.getElementById('header-title').innerText = 'Admin Portal';
-      } else {
-        document.getElementById('nav-admin').classList.add('hidden');
-        document.getElementById('header-title').innerText = 'Customer Portal';
-      }
-
-      // 2. Fetch customer data
-      var res = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
-      if (res.data) { currentCustomer = res.data; }
-
-      switchView('home');
-      loadRequests();
     }
 
     function loadProfile() {
       document.getElementById('profile-email').innerText = currentUser.email;
       if (currentCustomer) {
         document.getElementById('profile-cust-no').innerText = currentCustomer.customer_number;
-        document.getElementById('profile-name').innerText = currentCustomer.full_name;
       } else {
-        document.getElementById('profile-cust-no').innerText = 'No customer record yet';
-        document.getElementById('profile-name').innerText = 'Request a pickup to create profile';
+        document.getElementById('profile-cust-no').innerText = 'No record yet';
       }
     }
 
@@ -316,7 +349,7 @@
       if (resReq.error) { 
         showAlert('Error', resReq.error.message, true); 
       } else { 
-        showAlert('Request Sent!', 'Your pickup has been scheduled. Our crew will be there soon.', false); 
+        showAlert('Request Sent!', 'Your pickup has been scheduled.', false); 
         loadRequests(); 
       }
     }
@@ -337,9 +370,7 @@
         html += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">';
         html += '<strong>Pickup Request</strong>';
         html += '<span style="font-size: 12px; background: #eee; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">' + req.status + '</span>';
-        html += '</div>';
-        html += '<div class="text-sm" style="color: #666;">Date: ' + dateStr + '</div>';
-        html += '</div>';
+        html += '</div><div class="text-sm" style="color: #666;">Date: ' + dateStr + '</div></div>';
       });
       list.innerHTML = html;
     }
@@ -352,7 +383,7 @@
       var method = document.getElementById('pay-method').value;
       
       if (!amount || amount <= 0) { showAlert('Invalid Amount', 'Please enter a valid amount.', true); return; }
-      if (!currentCustomer) { showAlert('Action Required', 'Please request a pickup first to create your customer profile.', true); return; }
+      if (!currentCustomer) { showAlert('Action Required', 'Please request a pickup first.', true); return; }
 
       var btn = document.getElementById('pay-btn');
       btn.innerText = 'Processing...'; btn.disabled = true;
@@ -363,10 +394,9 @@
 
       btn.innerText = 'Confirm'; btn.disabled = false;
 
-      if (res.error) {
-        showAlert('Payment Error', res.error.message, true);
-      } else {
-        showAlert('Payment Recorded!', 'Your payment of ZMW ' + amount.toFixed(2) + ' is now pending confirmation by the administrator.', false);
+      if (res.error) { showAlert('Payment Error', res.error.message, true); } 
+      else {
+        showAlert('Payment Recorded!', 'Your payment is now pending confirmation.', false);
         closePayModal();
       }
     }
@@ -374,14 +404,12 @@
     async function loadPayments() {
       var list = document.getElementById('payments-list');
       if (!currentCustomer) {
-        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payment history.</p></div>';
-        return;
+        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payment history.</p></div>'; return;
       }
       var res = await supabaseClient.from('payments').select('*').eq('customer_id', currentCustomer.id).order('payment_date', { ascending: false });
 
       if (res.error || !res.data || res.data.length === 0) {
-        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payments recorded yet.</p></div>';
-        return;
+        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payments recorded yet.</p></div>'; return;
       }
 
       var html = '';
@@ -392,44 +420,50 @@
         html += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">';
         html += '<strong>ZMW ' + pay.amount_zmw.toFixed(2) + '</strong>';
         html += '<span style="font-size: 12px; color: white; background: ' + statusColor + '; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">' + pay.status + '</span>';
-        html += '</div>';
-        html += '<div class="text-sm" style="color: #666;">Method: ' + pay.method.toUpperCase() + '</div>';
-        html += '<div class="text-sm" style="color: #666;">Date: ' + dateStr + '</div>';
-        html += '</div>';
+        html += '</div><div class="text-sm" style="color: #666;">Method: ' + pay.method.toUpperCase() + '</div>';
+        html += '<div class="text-sm" style="color: #666;">Date: ' + dateStr + '</div></div>';
       });
       list.innerHTML = html;
     }
 
+    // --- ADMIN LOGIC ---
     async function loadAdminPayments() {
-      var list = document.getElementById('admin-payments-list');
+      var container = document.getElementById('admin-payments-table');
+      container.innerHTML = '<p>Loading data...</p>';
+      
       var res = await supabaseClient.from('payments').select('*, customers(full_name)').order('payment_date', { ascending: false });
 
       if (res.error || !res.data || res.data.length === 0) {
-        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payments found in the system.</p></div>';
-        return;
+        container.innerHTML = '<p style="color: #666;">No payments found in the system.</p>'; return;
       }
 
-      var html = '';
+      var html = '<table class="data-table"><thead><tr>';
+      html += '<th>Customer</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th><th>Action</th>';
+      html += '</tr></thead><tbody>';
+
       res.data.forEach(function(pay) {
-        var statusColor = pay.status === 'confirmed' ? '#10B981' : '#F59E0B';
+        var statusClass = pay.status === 'confirmed' ? 'status-confirmed' : 'status-pending';
         var dateStr = new Date(pay.payment_date).toLocaleDateString();
-        var custName = pay.customers ? pay.customers.full_name : 'Unknown Customer';
+        var custName = pay.customers ? pay.customers.full_name : 'Unknown';
         
-        html += '<div class="card-app" style="padding: 16px; border-left: 4px solid ' + statusColor + ';">';
-        html += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">';
-        html += '<strong>' + custName + '</strong>';
-        html += '<span style="font-size: 12px; color: white; background: ' + statusColor + '; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">' + pay.status + '</span>';
-        html += '</div>';
-        html += '<div class="text-sm" style="margin-bottom: 8px;"><strong>Amount:</strong> ZMW ' + pay.amount_zmw.toFixed(2) + '</div>';
-        html += '<div class="text-sm" style="color: #666;">Method: ' + pay.method.toUpperCase() + '</div>';
-        html += '<div class="text-sm" style="color: #666; margin-bottom: 12px;">Date: ' + dateStr + '</div>';
+        html += '<tr>';
+        html += '<td style="font-weight: 500;">' + custName + '</td>';
+        html += '<td>ZMW ' + pay.amount_zmw.toFixed(2) + '</td>';
+        html += '<td>' + pay.method.toUpperCase() + '</td>';
+        html += '<td>' + dateStr + '</td>';
+        html += '<td><span class="status-badge ' + statusClass + '">' + pay.status + '</span></td>';
         
+        html += '<td>';
         if (pay.status === 'pending') {
-          html += '<button class="btn" style="padding: 8px; font-size: 14px;" onclick="approvePayment(\'' + pay.id + '\')">Approve Payment</button>';
+          html += '<button class="btn btn-sm" style="background: #10B981; color: white;" onclick="approvePayment(\'' + pay.id + '\')">Approve</button>';
+        } else {
+          html += '<span style="color: #999; font-size: 14px;">Completed</span>';
         }
-        html += '</div>';
+        html += '</td></tr>';
       });
-      list.innerHTML = html;
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
     }
 
     async function approvePayment(paymentId) {
