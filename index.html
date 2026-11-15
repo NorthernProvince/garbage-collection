@@ -49,20 +49,8 @@
 </head>
 <body>
 
-  <!-- SETUP SCREEN -->
-  <div id="setup-screen" class="screen active">
-    <div class="card">
-      <div class="logo">ZG</div>
-      <h1 style="font-size: 24px; margin-bottom: 8px;">Connect Database</h1>
-      <p class="text-sm" style="margin-bottom: 24px; color: #666;">Paste your Supabase Project URL and Anon Key below.</p>
-      <input type="url" id="sb-url" placeholder="https://xxxxxxx.supabase.co" required>
-      <input type="text" id="sb-key" placeholder="eyJhbGciOi..." required>
-      <button class="btn" onclick="saveDatabaseKeys()">Connect & Save</button>
-    </div>
-  </div>
-
   <!-- AUTH SCREEN -->
-  <div id="auth-screen" class="screen">
+  <div id="auth-screen" class="screen active">
     <div class="card">
       <div class="logo">ZG</div>
       <h1 style="font-size: 24px; margin-bottom: 8px;">Welcome</h1>
@@ -164,29 +152,16 @@
   </div>
 
   <script>
-    var supabaseClient = null;
+    // ==========================================
+    // ⚠️ PASTE YOUR KEYS HERE ⚠️
+    // ==========================================
+    var SUPABASE_URL = 'PASTE_YOUR_SUPABASE_URL_HERE';
+    var SUPABASE_ANON_KEY = 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
+
+    // Initialize Supabase
+    var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     var currentUser = null;
     var currentCustomer = null;
-
-    function saveDatabaseKeys() {
-      var url = document.getElementById('sb-url').value.trim();
-      var key = document.getElementById('sb-key').value.trim();
-      if (!url || !key) { alert('Please enter both URL and Key.'); return; }
-      localStorage.setItem('zg-db-url', url);
-      localStorage.setItem('zg-db-key', key);
-      initSupabase();
-    }
-
-    function initSupabase() {
-      var url = localStorage.getItem('zg-db-url');
-      var key = localStorage.getItem('zg-db-key');
-      if (url && key) {
-        supabaseClient = window.supabase.createClient(url, key);
-        document.getElementById('setup-screen').classList.remove('active');
-        document.getElementById('auth-screen').classList.add('active');
-        checkSession();
-      }
-    }
 
     async function checkSession() {
       var res = await supabaseClient.auth.getSession();
@@ -388,7 +363,7 @@
       list.innerHTML = html;
     }
 
-    window.addEventListener('DOMContentLoaded', function() { initSupabase(); });
+    window.addEventListener('DOMContentLoaded', function() { checkSession(); });
   </script>
 </body>
 </html>
