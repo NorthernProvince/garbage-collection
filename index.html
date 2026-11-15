@@ -120,7 +120,7 @@
       <div id="view-profile" class="hidden">
         <h2 class="page-title">My Profile</h2>
         <div class="card-app">
-          <p class="text-sm text-sm mb-2" style="color: #666;">Email Address</p>
+          <p class="text-sm mb-2" style="color: #666;">Email Address</p>
           <p class="mb-4" id="profile-email" style="font-weight: bold;">-</p>
           
           <p class="text-sm mb-2" style="color: #666;">Customer Number</p>
@@ -164,14 +164,13 @@
   </div>
 
   <script>
-    let supabaseClient = null;
-    let currentUser = null;
-    let currentCustomer = null;
+    var supabaseClient = null;
+    var currentUser = null;
+    var currentCustomer = null;
 
-    // --- DATABASE CONNECTION ---
     function saveDatabaseKeys() {
-      const url = document.getElementById('sb-url').value.trim();
-      const key = document.getElementById('sb-key').value.trim();
+      var url = document.getElementById('sb-url').value.trim();
+      var key = document.getElementById('sb-key').value.trim();
       if (!url || !key) { alert('Please enter both URL and Key.'); return; }
       localStorage.setItem('zg-db-url', url);
       localStorage.setItem('zg-db-key', key);
@@ -179,8 +178,8 @@
     }
 
     function initSupabase() {
-      const url = localStorage.getItem('zg-db-url');
-      const key = localStorage.getItem('zg-db-key');
+      var url = localStorage.getItem('zg-db-url');
+      var key = localStorage.getItem('zg-db-key');
       if (url && key) {
         supabaseClient = window.supabase.createClient(url, key);
         document.getElementById('setup-screen').classList.remove('active');
@@ -189,31 +188,42 @@
       }
     }
 
-    // --- AUTHENTICATION ---
     async function checkSession() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) showApp(session.user);
+      var res = await supabaseClient.auth.getSession();
+      if (res.data.session) { showApp(res.data.session.user); }
     }
 
     async function handleLogin() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const btn = document.getElementById('login-btn');
-      const errorEl = document.getElementById('auth-error');
+      var email = document.getElementById('email').value;
+      var password = document.getElementById('password').value;
+      var btn = document.getElementById('login-btn');
+      var errorEl = document.getElementById('auth-error');
       btn.innerText = 'Logging in...';
       errorEl.innerText = '';
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) { errorEl.innerText = error.message; btn.innerText = 'Log In'; } 
-      else { showApp(data.user); }
+      
+      var res = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+      
+      if (res.error) { 
+        errorEl.innerText = res.error.message; 
+        btn.innerText = 'Log In'; 
+      } else { 
+        showApp(res.data.user); 
+      }
     }
 
     async function handleSignUp() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+      var email = document.getElementById('email').value;
+      var password = document.getElementById('password').value;
       if (!email || !password) { document.getElementById('auth-error').innerText = 'Please enter email and password.'; return; }
-      const { data, error } = await supabaseClient.auth.signUp({ email, password });
-      if (error) { document.getElementById('auth-error').innerText = error.message; } 
-      else { alert('Account created!'); if (data.user) showApp(data.user); }
+      
+      var res = await supabaseClient.auth.signUp({ email: email, password: password });
+      
+      if (res.error) { 
+        document.getElementById('auth-error').innerText = res.error.message; 
+      } else { 
+        alert('Account created!'); 
+        if (res.data.user) showApp(res.data.user); 
+      }
     }
 
     async function handleLogout() {
@@ -222,43 +232,36 @@
       document.getElementById('auth-screen').classList.add('active');
     }
 
-    // --- NAVIGATION ---
     function switchView(viewName) {
-      // Hide all views
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-history').classList.add('hidden');
       document.getElementById('view-profile').classList.add('hidden');
       
-      // Reset nav active states
       document.getElementById('nav-home').classList.remove('active');
       document.getElementById('nav-history').classList.remove('active');
       document.getElementById('nav-profile').classList.remove('active');
       
-      // Show selected view
       document.getElementById('view-' + viewName).classList.remove('hidden');
       document.getElementById('nav-' + viewName).classList.add('active');
 
-      // Load data for that view
       if (viewName === 'history') loadPayments();
       if (viewName === 'profile') loadProfile();
     }
 
-    // --- APP LOGIC ---
     async function showApp(user) {
       currentUser = user;
       document.getElementById('auth-screen').classList.remove('active');
       document.getElementById('app-screen').classList.add('active');
       document.getElementById('user-email').innerText = user.email;
       
-      // Fetch customer record if it exists
-      let { data: customer } = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
-      currentCustomer = customer;
+      var res = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
+      if (res.data) { currentCustomer = res.data; }
 
       switchView('home');
       loadRequests();
     }
 
-    async function loadProfile() {
+    function loadProfile() {
       document.getElementById('profile-email').innerText = currentUser.email;
       if (currentCustomer) {
         document.getElementById('profile-cust-no').innerText = currentCustomer.customer_number;
@@ -272,87 +275,83 @@
     async function requestCollection() {
       if (!currentUser) return;
       
-      // Ensure customer record exists
       if (!currentCustomer) {
-        const { data: newCust, error: custErr } = await supabaseClient.from('customers').insert([
-          { 
-            profile_id: currentUser.id, 
-            customer_number: 'C-' + Math.floor(Math.random() * 10000),
-            full_name: currentUser.email.split('@')[0], 
-            phone: '0970000000', 
-            address: 'Default Address' 
-          }
-        ]).select().single();
-        if (custErr) { alert('Error creating profile: ' + custErr.message); return; }
-        currentCustomer = newCust;
+        var randNum = Math.floor(Math.random() * 10000);
+        var resCust = await supabaseClient.from('customers').insert([{ 
+          profile_id: currentUser.id, 
+          customer_number: 'C-' + randNum,
+          full_name: currentUser.email.split('@')[0], 
+          phone: '0970000000', 
+          address: 'Default Address' 
+        }]).select().single();
+        
+        if (resCust.error) { alert('Error creating profile: ' + resCust.error.message); return; }
+        currentCustomer = resCust.data;
       }
 
-      const { error } = await supabaseClient.from('collection_requests').insert([
+      var resReq = await supabaseClient.from('collection_requests').insert([
         { customer_id: currentCustomer.id, status: 'requested', customer_notes: 'Requested via App' }
       ]);
 
-      if (error) { alert('Error: ' + error.message); } 
+      if (resReq.error) { alert('Error: ' + resReq.error.message); } 
       else { alert('Pickup requested!'); loadRequests(); }
     }
 
     async function loadRequests() {
-      const list = document.getElementById('requests-list');
-      const { data: requests, error } = await supabaseClient.from('collection_requests').select('*').order('requested_at', { ascending: false });
+      var list = document.getElementById('requests-list');
+      var res = await supabaseClient.from('collection_requests').select('*').order('requested_at', { ascending: false });
 
-      if (error || !requests || requests.length === 0) {
+      if (res.error || !res.data || res.data.length === 0) {
         list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No collection requests found.</p></div>';
         return;
       }
 
-      let html = '';
-      requests.forEach(req => {
-        html += `
-          <div class="card-app" style="padding: 16px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <strong>Pickup Request</strong>
-              <span style="font-size: 12px; background: #eee; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">${req.status}</span>
-            </div>
-            <div class="text-sm" style="color: #666;">Date: ${new Date(req.requested_at).toLocaleDateString()}</div>
-          </div>
-        `;
+      var html = '';
+      res.data.forEach(function(req) {
+        var dateStr = new Date(req.requested_at).toLocaleDateString();
+        html += '<div class="card-app" style="padding: 16px;">';
+        html += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">';
+        html += '<strong>Pickup Request</strong>';
+        html += '<span style="font-size: 12px; background: #eee; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">' + req.status + '</span>';
+        html += '</div>';
+        html += '<div class="text-sm" style="color: #666;">Date: ' + dateStr + '</div>';
+        html += '</div>';
       });
       list.innerHTML = html;
     }
 
-    // --- PAYMENTS ---
     function openPayModal() {
       document.getElementById('pay-modal').classList.add('active');
     }
+    
     function closePayModal() {
       document.getElementById('pay-modal').classList.remove('active');
       document.getElementById('pay-amount').value = '';
     }
 
     async function submitPayment() {
-      const amount = parseFloat(document.getElementById('pay-amount').value);
-      const method = document.getElementById('pay-method').value;
+      var amount = parseFloat(document.getElementById('pay-amount').value);
+      var method = document.getElementById('pay-method').value;
       
       if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
       if (!currentCustomer) { alert('Please request a pickup first to create your customer profile.'); return; }
 
-      const btn = document.getElementById('pay-btn');
+      var btn = document.getElementById('pay-btn');
       btn.innerText = 'Processing...';
       btn.disabled = true;
 
-      const { error } = await supabaseClient.from('payments').insert([
-        { 
-          customer_id: currentCustomer.id, 
-          amount_zmw: amount, 
-          method: method, 
-          status: 'pending' 
-        }
-      ]);
+      var res = await supabaseClient.from('payments').insert([{ 
+        customer_id: currentCustomer.id, 
+        amount_zmw: amount, 
+        method: method, 
+        status: 'pending' 
+      }]);
 
       btn.innerText = 'Confirm';
       btn.disabled = false;
 
-      if (error) {
-        alert('Error: ' + error.message);
+      if (res.error) {
+        alert('Error: ' + res.error.message);
       } else {
         alert('Payment recorded! It is now pending confirmation by the administrator.');
         closePayModal();
@@ -360,41 +359,36 @@
     }
 
     async function loadPayments() {
-      const list = document.getElementById('payments-list');
+      var list = document.getElementById('payments-list');
       if (!currentCustomer) {
         list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payment history.</p></div>';
         return;
       }
 
-      const { data: payments, error } = await supabaseClient
-        .from('payments')
-        .select('*')
-        .eq('customer_id', currentCustomer.id)
-        .order('payment_date', { ascending: false });
+      var res = await supabaseClient.from('payments').select('*').eq('customer_id', currentCustomer.id).order('payment_date', { ascending: false });
 
-      if (error || !payments || payments.length === 0) {
+      if (res.error || !res.data || res.data.length === 0) {
         list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payments recorded yet.</p></div>';
         return;
       }
 
-      let html = '';
-      payments.forEach(pay => {
-        let statusColor = pay.status === 'confirmed' ? '#10B981' : '#F59E0B';
-        html += `
-          <div class="card-app" style="padding: 16px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <strong>ZMW ${pay.amount_zmw.toFixed(2)}</strong>
-              <span style="font-size: 12px; color: white; background: ${statusColor}; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">${pay.status}</span>
-            </div>
-            <div class="text-sm" style="color: #666;">Method: ${pay.method.toUpperCase()}</div>
-            <div class="text-sm" style="color: #666;">Date: ${new Date(pay.payment_date).toLocaleDateString()}</div>
-          </div>
-        `;
+      var html = '';
+      res.data.forEach(function(pay) {
+        var statusColor = pay.status === 'confirmed' ? '#10B981' : '#F59E0B';
+        var dateStr = new Date(pay.payment_date).toLocaleDateString();
+        html += '<div class="card-app" style="padding: 16px;">';
+        html += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">';
+        html += '<strong>ZMW ' + pay.amount_zmw.toFixed(2) + '</strong>';
+        html += '<span style="font-size: 12px; color: white; background: ' + statusColor + '; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">' + pay.status + '</span>';
+        html += '</div>';
+        html += '<div class="text-sm" style="color: #666;">Method: ' + pay.method.toUpperCase() + '</div>';
+        html += '<div class="text-sm" style="color: #666;">Date: ' + dateStr + '</div>';
+        html += '</div>';
       });
       list.innerHTML = html;
     }
 
-    window.addEventListener('DOMContentLoaded', () => { initSupabase(); });
+    window.addEventListener('DOMContentLoaded', function() { initSupabase(); });
   </script>
 </body>
 </html>
