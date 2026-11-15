@@ -34,9 +34,13 @@
     .nav-item.active { color: var(--black); background: rgba(0,0,0,0.05); }
 
     /* Modals */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-    .modal-overlay.active { display: flex; }
-    .modal { background: var(--white); padding: 24px; border-radius: 20px; width: 100%; max-width: 400px; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+    .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
+    .modal { background: var(--white); padding: 32px 24px; border-radius: 24px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    
+    .modal-icon { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; }
+    .modal-icon.success { background: #E8F5E9; color: #10B981; }
+    .modal-icon.error { background: #FFEBEE; color: #EF4444; }
 
     .text-sm { font-size: 14px; }
     .text-center { text-align: center; }
@@ -45,6 +49,9 @@
     .mt-4 { margin-top: 16px; }
     .hidden { display: none !important; }
     .page-title { font-size: 24px; font-weight: bold; margin-bottom: 16px; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -130,9 +137,9 @@
 
   <!-- PAY BILL MODAL -->
   <div class="modal-overlay" id="pay-modal">
-    <div class="modal">
+    <div class="modal" style="text-align: left;">
       <h2 style="font-size: 20px; margin-bottom: 8px;">Pay Bill</h2>
-      <p class="text-sm" style="color: #666; margin-bottom: 20px;">Enter the amount you wish to pay. (Note: This records the payment in the database, but does not deduct real money yet).</p>
+      <p class="text-sm" style="color: #666; margin-bottom: 20px;">Enter the amount you wish to pay. (Note: This records the payment, but does not deduct real money yet).</p>
       
       <label class="text-sm" style="font-weight: bold;">Amount (ZMW)</label>
       <input type="number" id="pay-amount" placeholder="e.g. 200" style="margin-top: 4px;">
@@ -151,18 +158,49 @@
     </div>
   </div>
 
+  <!-- CUSTOM ALERT MODAL (Replaces ugly browser alerts) -->
+  <div class="modal-overlay" id="alert-modal">
+    <div class="modal">
+      <div class="modal-icon success" id="alert-icon">✓</div>
+      <h2 id="alert-title" style="font-size: 20px; margin-bottom: 8px;">Success!</h2>
+      <p id="alert-message" class="text-sm" style="color: #666; margin-bottom: 24px;">Your action was completed successfully.</p>
+      <button class="btn" onclick="closeAlert()">Got it</button>
+    </div>
+  </div>
+
   <script>
     // ==========================================
     // ⚠️ PASTE YOUR KEYS HERE ⚠️
     // ==========================================
-    var SUPABASE_URL = 'PASTE_YOUR_SUPABASE_URL_HERE';
-    var SUPABASE_ANON_KEY = 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
+    var SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL_HERE';
+    var SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
 
-    // Initialize Supabase
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     var currentUser = null;
     var currentCustomer = null;
 
+    // --- CUSTOM ALERT LOGIC ---
+    function showAlert(title, message, isError) {
+      document.getElementById('alert-title').innerText = title;
+      document.getElementById('alert-message').innerText = message;
+      
+      var icon = document.getElementById('alert-icon');
+      if (isError) {
+        icon.className = 'modal-icon error';
+        icon.innerText = '✕';
+      } else {
+        icon.className = 'modal-icon success';
+        icon.innerText = '✓';
+      }
+      
+      document.getElementById('alert-modal').classList.add('active');
+    }
+
+    function closeAlert() {
+      document.getElementById('alert-modal').classList.remove('active');
+    }
+
+    // --- AUTHENTICATION ---
     async function checkSession() {
       var res = await supabaseClient.auth.getSession();
       if (res.data.session) { showApp(res.data.session.user); }
@@ -196,7 +234,7 @@
       if (res.error) { 
         document.getElementById('auth-error').innerText = res.error.message; 
       } else { 
-        alert('Account created!'); 
+        showAlert('Account Created!', 'Welcome to Zambia Garbage Collection.', false); 
         if (res.data.user) showApp(res.data.user); 
       }
     }
@@ -207,6 +245,7 @@
       document.getElementById('auth-screen').classList.add('active');
     }
 
+    // --- NAVIGATION ---
     function switchView(viewName) {
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-history').classList.add('hidden');
@@ -247,6 +286,7 @@
       }
     }
 
+    // --- REQUESTS ---
     async function requestCollection() {
       if (!currentUser) return;
       
@@ -260,7 +300,7 @@
           address: 'Default Address' 
         }]).select().single();
         
-        if (resCust.error) { alert('Error creating profile: ' + resCust.error.message); return; }
+        if (resCust.error) { showAlert('Error', resCust.error.message, true); return; }
         currentCustomer = resCust.data;
       }
 
@@ -268,8 +308,12 @@
         { customer_id: currentCustomer.id, status: 'requested', customer_notes: 'Requested via App' }
       ]);
 
-      if (resReq.error) { alert('Error: ' + resReq.error.message); } 
-      else { alert('Pickup requested!'); loadRequests(); }
+      if (resReq.error) { 
+        showAlert('Error', resReq.error.message, true); 
+      } else { 
+        showAlert('Request Sent!', 'Your pickup has been scheduled. Our crew will be there soon.', false); 
+        loadRequests(); 
+      }
     }
 
     async function loadRequests() {
@@ -295,21 +339,16 @@
       list.innerHTML = html;
     }
 
-    function openPayModal() {
-      document.getElementById('pay-modal').classList.add('active');
-    }
-    
-    function closePayModal() {
-      document.getElementById('pay-modal').classList.remove('active');
-      document.getElementById('pay-amount').value = '';
-    }
+    // --- PAYMENTS ---
+    function openPayModal() { document.getElementById('pay-modal').classList.add('active'); }
+    function closePayModal() { document.getElementById('pay-modal').classList.remove('active'); document.getElementById('pay-amount').value = ''; }
 
     async function submitPayment() {
       var amount = parseFloat(document.getElementById('pay-amount').value);
       var method = document.getElementById('pay-method').value;
       
-      if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
-      if (!currentCustomer) { alert('Please request a pickup first to create your customer profile.'); return; }
+      if (!amount || amount <= 0) { showAlert('Invalid Amount', 'Please enter a valid amount.', true); return; }
+      if (!currentCustomer) { showAlert('Action Required', 'Please request a pickup first to create your customer profile.', true); return; }
 
       var btn = document.getElementById('pay-btn');
       btn.innerText = 'Processing...';
@@ -326,9 +365,9 @@
       btn.disabled = false;
 
       if (res.error) {
-        alert('Error: ' + res.error.message);
+        showAlert('Payment Error', res.error.message, true);
       } else {
-        alert('Payment recorded! It is now pending confirmation by the administrator.');
+        showAlert('Payment Recorded!', 'Your payment of ZMW ' + amount.toFixed(2) + ' is now pending confirmation by the administrator.', false);
         closePayModal();
       }
     }
