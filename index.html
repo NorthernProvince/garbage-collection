@@ -186,19 +186,13 @@
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     var currentUser = null;
     var currentCustomer = null;
-    var isAdmin = false;
 
     function showAlert(title, message, isError) {
       document.getElementById('alert-title').innerText = title;
       document.getElementById('alert-message').innerText = message;
       var icon = document.getElementById('alert-icon');
-      if (isError) {
-        icon.className = 'modal-icon error';
-        icon.innerText = '✕';
-      } else {
-        icon.className = 'modal-icon success';
-        icon.innerText = '✓';
-      }
+      if (isError) { icon.className = 'modal-icon error'; icon.innerText = '✕'; } 
+      else { icon.className = 'modal-icon success'; icon.innerText = '✓'; }
       document.getElementById('alert-modal').classList.add('active');
     }
     function closeAlert() { document.getElementById('alert-modal').classList.remove('active'); }
@@ -213,14 +207,12 @@
       var password = document.getElementById('password').value;
       var btn = document.getElementById('login-btn');
       var errorEl = document.getElementById('auth-error');
-      btn.innerText = 'Logging in...';
-      errorEl.innerText = '';
+      btn.innerText = 'Logging in...'; errorEl.innerText = '';
       
       var res = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
       
       if (res.error) { 
-        errorEl.innerText = res.error.message; 
-        btn.innerText = 'Log In'; 
+        errorEl.innerText = res.error.message; btn.innerText = 'Log In'; 
       } else { 
         showApp(res.data.user); 
       }
@@ -266,18 +258,27 @@
       document.getElementById('app-screen').classList.add('active');
       document.getElementById('user-email').innerText = user.email;
       
-      // Check if this user is an Admin
-      var profRes = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
-      if (profRes.data && profRes.data.role === 'owner_admin') {
+      // 1. Check if user is admin (Checking auth metadata first, then database profile)
+      var isAdmin = false;
+      
+      if (user.app_metadata && user.app_metadata.role === 'owner_admin') {
         isAdmin = true;
+      } else {
+        var profRes = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+        if (profRes.data && profRes.data.role === 'owner_admin') {
+          isAdmin = true;
+        }
+      }
+
+      if (isAdmin) {
         document.getElementById('nav-admin').classList.remove('hidden');
         document.getElementById('header-title').innerText = 'Admin Portal';
       } else {
-        isAdmin = false;
         document.getElementById('nav-admin').classList.add('hidden');
         document.getElementById('header-title').innerText = 'Customer Portal';
       }
 
+      // 2. Fetch customer data
       var res = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
       if (res.data) { currentCustomer = res.data; }
 
@@ -296,7 +297,6 @@
       }
     }
 
-    // --- REQUESTS ---
     async function requestCollection() {
       if (!currentUser) return;
       if (!currentCustomer) {
@@ -344,7 +344,6 @@
       list.innerHTML = html;
     }
 
-    // --- PAYMENTS (Customer) ---
     function openPayModal() { document.getElementById('pay-modal').classList.add('active'); }
     function closePayModal() { document.getElementById('pay-modal').classList.remove('active'); document.getElementById('pay-amount').value = ''; }
 
@@ -401,14 +400,9 @@
       list.innerHTML = html;
     }
 
-    // --- ADMIN LOGIC ---
     async function loadAdminPayments() {
       var list = document.getElementById('admin-payments-list');
-      
-      // Fetch payments and join with customer name
-      var res = await supabaseClient.from('payments')
-        .select('*, customers(full_name, customer_number)')
-        .order('payment_date', { ascending: false });
+      var res = await supabaseClient.from('payments').select('*, customers(full_name)').order('payment_date', { ascending: false });
 
       if (res.error || !res.data || res.data.length === 0) {
         list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payments found in the system.</p></div>';
@@ -419,7 +413,7 @@
       res.data.forEach(function(pay) {
         var statusColor = pay.status === 'confirmed' ? '#10B981' : '#F59E0B';
         var dateStr = new Date(pay.payment_date).toLocaleDateString();
-        var custName = pay.customers ? pay.customers.full_name : 'Unknown';
+        var custName = pay.customers ? pay.customers.full_name : 'Unknown Customer';
         
         html += '<div class="card-app" style="padding: 16px; border-left: 4px solid ' + statusColor + ';">';
         html += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">';
@@ -430,27 +424,18 @@
         html += '<div class="text-sm" style="color: #666;">Method: ' + pay.method.toUpperCase() + '</div>';
         html += '<div class="text-sm" style="color: #666; margin-bottom: 12px;">Date: ' + dateStr + '</div>';
         
-        // If pending, show Approve button
         if (pay.status === 'pending') {
           html += '<button class="btn" style="padding: 8px; font-size: 14px;" onclick="approvePayment(\'' + pay.id + '\')">Approve Payment</button>';
         }
-        
         html += '</div>';
       });
       list.innerHTML = html;
     }
 
     async function approvePayment(paymentId) {
-      var res = await supabaseClient.from('payments')
-        .update({ status: 'confirmed', confirmed_at: new Date().toISOString() })
-        .eq('id', paymentId);
-
-      if (res.error) {
-        showAlert('Error', res.error.message, true);
-      } else {
-        showAlert('Approved!', 'The payment has been successfully confirmed.', false);
-        loadAdminPayments(); // Refresh the list
-      }
+      var res = await supabaseClient.from('payments').update({ status: 'confirmed', confirmed_at: new Date().toISOString() }).eq('id', paymentId);
+      if (res.error) { showAlert('Error', res.error.message, true); } 
+      else { showAlert('Approved!', 'The payment has been successfully confirmed.', false); loadAdminPayments(); }
     }
 
     window.addEventListener('DOMContentLoaded', function() { checkSession(); });
