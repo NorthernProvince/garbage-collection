@@ -4,161 +4,218 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#FFCC00" />
-  <title>Zambia Garbage Collection</title>
+  <title>Kasama Garbage Collection Company</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root { --yellow: #FFCC00; --black: #000000; --white: #FFFFFF; --gray: #F5F5F5; --border: rgba(0,0,0,0.1); }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--gray); color: var(--black); line-height: 1.5; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root { 
+      --yellow: #FFCC00; 
+      --black: #000000; 
+      --white: #FFFFFF; 
+      --gray-bg: #F4F6F8; 
+      --border: rgba(0,0,0,0.08);
+      --text-main: #111827;
+      --text-muted: #6B7280;
+    }
     
-    /* --- SCREENS --- */
-    .app-view { display: none; height: 100vh; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--gray-bg); color: var(--text-main); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    
+    /* --- SCREENS LAYOUT --- */
+    .app-view { display: none; height: 100dvh; width: 100vw; overflow: hidden; }
     .app-view.active { display: flex; }
 
     /* --- LOGIN SCREEN --- */
-    #auth-screen { align-items: center; justify-content: center; padding: 20px; }
-    .card { background: var(--white); padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-    .logo { width: 50px; height: 50px; background: var(--yellow); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; margin-bottom: 20px; }
-    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; font-family: inherit; background: var(--white); }
-    .btn { width: 100%; padding: 14px; background: var(--black); color: var(--yellow); border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; transition: opacity 0.2s; }
-    .btn:hover { opacity: 0.8; }
+    #auth-screen { align-items: center; justify-content: center; padding: 20px; background: var(--white); }
+    .login-card { background: var(--white); padding: 40px 32px; border-radius: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid var(--border); }
+    
+    .brand-logo { width: 60px; height: 60px; background: var(--yellow); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; color: var(--black); margin-bottom: 24px; }
+    .brand-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+    
+    input, select { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; font-size: 15px; background: var(--white); transition: border-color 0.2s; }
+    input:focus, select:focus { outline: none; border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(255,204,0,0.2); }
+    
+    .btn { width: 100%; padding: 16px; background: var(--black); color: var(--yellow); border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: transform 0.1s, opacity 0.2s; }
+    .btn:active { transform: scale(0.98); }
+    .btn:hover { opacity: 0.9; }
     .btn-outline { background: transparent; color: var(--black); border: 1px solid var(--border); }
     
-    /* --- CUSTOMER APP LAYOUT (Mobile) --- */
-    #customer-app { flex-direction: column; }
-    .header { background: var(--yellow); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-    .main-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 80px; }
-    .card-app { background: var(--white); padding: 20px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px; }
-    .nav-item { text-align: center; font-size: 14px; font-weight: bold; color: #666; cursor: pointer; padding: 8px 16px; border-radius: 8px; }
-    .nav-item.active { color: var(--black); background: rgba(0,0,0,0.05); }
+    /* --- CUSTOMER MOBILE APP --- */
+    #customer-app { flex-direction: column; background: var(--gray-bg); }
+    
+    .mobile-container { width: 100%; max-width: 600px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; background: var(--gray-bg); }
+    
+    .top-header { background: var(--yellow); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); }
+    
+    .main-content { flex: 1; padding: 24px; overflow-y: auto; padding-bottom: 100px; }
+    .card { background: var(--white); padding: 24px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); }
+    .card-black { background: var(--black); color: var(--white); border: none; }
+    
+    .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 16px; max-width: 600px; margin: 0 auto; }
+    .nav-item { flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; padding: 10px; border-radius: 12px; transition: all 0.2s; }
+    .nav-item.active { color: var(--black); background: rgba(0,0,0,0.04); }
 
-    /* --- ADMIN DASHBOARD LAYOUT (Desktop) --- */
-    #admin-app { background: #F0F2F5; flex-direction: row; }
-    .sidebar { width: 250px; background: var(--black); color: var(--white); display: flex; flex-direction: column; }
-    .sidebar-header { padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 12px; }
-    .sidebar-menu { padding: 16px; flex: 1; }
-    .menu-item { padding: 12px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; color: #A0A0A0; margin-bottom: 4px; }
+    /* --- ADMIN DESKTOP DASHBOARD --- */
+    #admin-app { background: var(--gray-bg); }
+    .sidebar { width: 260px; background: var(--black); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 32px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-menu { padding: 24px 16px; flex: 1; }
+    .menu-item { padding: 14px 20px; border-radius: 12px; font-weight: 600; color: #9CA3AF; margin-bottom: 8px; cursor: pointer; }
     .menu-item.active { background: rgba(255, 204, 0, 0.1); color: var(--yellow); }
-    .admin-main { flex: 1; padding: 32px; overflow-y: auto; }
-    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .data-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .data-table th, .data-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); }
-    .data-table th { background: #FAFAFA; font-weight: 600; color: #666; font-size: 14px; text-transform: uppercase; }
+    
+    .admin-main { flex: 1; padding: 40px; overflow-y: auto; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+    
+    .data-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+    .data-table th, .data-table td { padding: 20px 24px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table th { background: #FAFAFA; font-weight: 600; color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
     .data-table tr:last-child td { border-bottom: none; }
-    .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+    .status-badge { padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700; text-transform: uppercase; display: inline-block; }
     .status-pending { background: #FEF3C7; color: #D97706; }
     .status-confirmed { background: #D1FAE5; color: #059669; }
-    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; width: auto; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 8px; width: auto; font-weight: 600; }
 
     /* --- MODALS --- */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
     .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
-    .modal { background: var(--white); padding: 32px 24px; border-radius: 24px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .modal-icon { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; }
+    .modal { background: var(--white); padding: 40px 32px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 24px 48px rgba(0,0,0,0.2); animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .modal-icon { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 36px; }
     .modal-icon.success { background: #E8F5E9; color: #10B981; }
     .modal-icon.error { background: #FFEBEE; color: #EF4444; }
 
     .text-sm { font-size: 14px; }
+    .text-muted { color: var(--text-muted); }
     .text-center { text-align: center; }
     .mb-2 { margin-bottom: 8px; }
     .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
     .mt-4 { margin-top: 16px; }
     .hidden { display: none !important; }
-    .page-title { font-size: 24px; font-weight: bold; margin-bottom: 16px; }
-
+    
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      #admin-app { flex-direction: column; }
+      .sidebar { width: 100%; flex-direction: row; justify-content: space-between; padding: 16px; }
+      .sidebar-menu { display: flex; padding: 0; }
+      .menu-item { margin-bottom: 0; padding: 10px; }
+      .admin-main { padding: 20px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- 1. AUTH SCREEN (Default View) -->
+  <!-- ========================================== -->
+  <!-- 1. AUTH SCREEN                             -->
+  <!-- ========================================== -->
   <div id="auth-screen" class="app-view active">
-    <div class="card">
-      <div class="logo">ZG</div>
-      <h1 style="font-size: 24px; margin-bottom: 8px;">Welcome</h1>
-      <p class="text-sm" style="margin-bottom: 24px; color: #666;">Log in to manage your account.</p>
+    <div class="login-card">
+      <div class="brand-logo">KG</div>
+      <h1 class="brand-title">Kasama Garbage</h1>
+      <p class="text-sm text-muted mb-6">Log in to manage your collection.</p>
+      
       <input type="email" id="email" placeholder="Email Address" required>
       <input type="password" id="password" placeholder="Password" required>
+      
       <button class="btn" onclick="handleLogin()" id="login-btn">Log In</button>
+      
       <div class="text-center mt-4">
-        <span class="text-sm" style="color: #666;">Don't have an account? </span>
-        <span class="text-sm" style="font-weight: bold; cursor: pointer; text-decoration: underline;" onclick="handleSignUp()">Sign up</span>
+        <span class="text-sm text-muted">Don't have an account? </span>
+        <span class="text-sm" style="font-weight: 700; cursor: pointer; text-decoration: underline;" onclick="handleSignUp()">Sign up</span>
       </div>
-      <p id="auth-error" style="color: red; font-size: 14px; margin-top: 12px; text-align: center;"></p>
+      <p id="auth-error" style="color: #EF4444; font-size: 14px; margin-top: 16px; font-weight: 500; text-align: center;"></p>
     </div>
   </div>
 
-  <!-- 2. CUSTOMER MOBILE APP -->
+  <!-- ========================================== -->
+  <!-- 2. CUSTOMER MOBILE APP                     -->
+  <!-- ========================================== -->
   <div id="customer-app" class="app-view">
-    <header class="header">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <div class="logo" style="margin: 0; width: 36px; height: 36px; font-size: 14px;">ZG</div>
-        <div>
-          <div style="font-weight: bold; font-size: 16px;">Customer Portal</div>
-          <div class="text-sm" id="cust-email" style="opacity: 0.7;">loading...</div>
+    <div class="mobile-container">
+      
+      <header class="top-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="brand-logo" style="width: 40px; height: 40px; font-size: 16px; margin: 0; border-radius: 10px;">KG</div>
+          <div>
+            <div style="font-weight: 800; font-size: 16px; line-height: 1.2;">Kasama Garbage</div>
+            <div class="text-xs" id="cust-email" style="opacity: 0.6; font-weight: 500;">loading...</div>
+          </div>
         </div>
-      </div>
-      <button class="btn btn-outline" style="width: auto; padding: 8px 16px;" onclick="handleLogout()">Log out</button>
-    </header>
+        <button class="btn btn-outline" style="width: auto; padding: 8px 16px; font-size: 13px; background: rgba(255,255,255,0.5); border: none;" onclick="handleLogout()">Log out</button>
+      </header>
 
-    <main class="main-content">
-      <div id="view-home">
-        <div class="card-app" style="background: var(--black); color: white;">
-          <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 8px; color: var(--yellow);">Account Balance</h2>
-          <div style="font-size: 32px; font-weight: bold;">ZMW 0.00</div>
+      <main class="main-content">
+        <!-- HOME VIEW -->
+        <div id="view-home">
+          <div class="card card-black">
+            <h2 class="text-sm" style="text-transform: uppercase; margin-bottom: 8px; color: var(--yellow); font-weight: 700; letter-spacing: 1px;">Account Balance</h2>
+            <div style="font-size: 36px; font-weight: 800; letter-spacing: -1px;">ZMW 0.00</div>
+            <p class="text-sm mt-2" style="opacity: 0.7;">Your next collection is scheduled soon.</p>
+          </div>
+
+          <div class="card">
+            <h2 style="font-size: 18px; margin-bottom: 16px; font-weight: 700;">Quick Actions</h2>
+            <button class="btn mb-2" onclick="requestCollection()">Request Pickup</button>
+            <button class="btn btn-outline" onclick="openPayModal()">Pay Bill</button>
+          </div>
+
+          <h2 style="font-size: 20px; font-weight: 700; margin: 32px 0 16px;">Recent Requests</h2>
+          <div id="requests-list"></div>
         </div>
-        <div class="card-app">
-          <h2 style="font-size: 18px; margin-bottom: 16px;">Quick Actions</h2>
-          <button class="btn mb-2" onclick="requestCollection()">Request Pickup</button>
-          <button class="btn btn-outline" onclick="openPayModal()">Pay Bill</button>
+
+        <!-- HISTORY VIEW -->
+        <div id="view-history" class="hidden">
+          <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 24px;">Payment History</h2>
+          <div id="payments-list"></div>
         </div>
-        <h2 class="page-title mt-4">Recent Requests</h2>
-        <div id="requests-list"></div>
-      </div>
 
-      <div id="view-history" class="hidden">
-        <h2 class="page-title">Payment History</h2>
-        <div id="payments-list"></div>
-      </div>
-
-      <div id="view-profile" class="hidden">
-        <h2 class="page-title">My Profile</h2>
-        <div class="card-app">
-          <p class="text-sm mb-2" style="color: #666;">Email Address</p>
-          <p class="mb-4" id="profile-email" style="font-weight: bold;">-</p>
-          <p class="text-sm mb-2" style="color: #666;">Customer Number</p>
-          <p class="mb-4" id="profile-cust-no" style="font-weight: bold;">-</p>
+        <!-- PROFILE VIEW -->
+        <div id="view-profile" class="hidden">
+          <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 24px;">My Profile</h2>
+          <div class="card">
+            <p class="text-sm text-muted mb-2">Email Address</p>
+            <p class="mb-6" id="profile-email" style="font-weight: 600; font-size: 16px;">-</p>
+            <p class="text-sm text-muted mb-2">Customer Number</p>
+            <p class="mb-6" id="profile-cust-no" style="font-weight: 600; font-size: 16px;">-</p>
+            <p class="text-sm text-muted mb-2">Company</p>
+            <p style="font-weight: 600; font-size: 16px;">Kasama Garbage Collection Company</p>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
 
-    <nav class="bottom-nav">
-      <div class="nav-item active" id="nav-home" onclick="switchView('home')">Home</div>
-      <div class="nav-item" id="nav-history" onclick="switchView('history')">History</div>
-      <div class="nav-item" id="nav-profile" onclick="switchView('profile')">Profile</div>
-    </nav>
+      <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-home" onclick="switchView('home')">Home</div>
+        <div class="nav-item" id="nav-history" onclick="switchView('history')">History</div>
+        <div class="nav-item" id="nav-profile" onclick="switchView('profile')">Profile</div>
+      </nav>
+
+    </div>
   </div>
 
-  <!-- 3. ADMIN DESKTOP DASHBOARD -->
+  <!-- ========================================== -->
+  <!-- 3. ADMIN DESKTOP DASHBOARD                 -->
+  <!-- ========================================== -->
   <div id="admin-app" class="app-view">
     <div class="sidebar">
       <div class="sidebar-header">
-        <div class="logo" style="margin: 0; width: 36px; height: 36px; font-size: 14px;">ZG</div>
+        <div class="brand-logo" style="width: 44px; height: 44px; font-size: 18px; margin: 0; border-radius: 12px; background: var(--yellow);">KG</div>
         <div>
-          <div style="font-weight: bold; font-size: 16px; color: var(--white);">Admin Panel</div>
-          <div class="text-sm" id="admin-email" style="opacity: 0.7;">loading...</div>
+          <div style="font-weight: 800; font-size: 16px; color: var(--white); margin-top: 12px;">Kasama Admin</div>
+          <div class="text-sm" id="admin-email" style="opacity: 0.6;">loading...</div>
         </div>
       </div>
       <div class="sidebar-menu">
         <div class="menu-item active">Payments</div>
-        <div class="menu-item" onclick="handleLogout()" style="color: #EF4444; margin-top: 24px;">Log out</div>
+        <div class="menu-item" onclick="handleLogout()" style="color: #EF4444;">Log out</div>
       </div>
     </div>
+    
     <div class="admin-main">
       <div class="admin-header">
-        <h1 style="font-size: 28px; font-weight: bold;">Payment Approvals</h1>
+        <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -1px;">Payment Approvals</h1>
         <button class="btn btn-sm" onclick="loadAdminPayments()">Refresh Data</button>
       </div>
       <div id="admin-payments-table"></div>
@@ -168,17 +225,20 @@
   <!-- PAY BILL MODAL -->
   <div class="modal-overlay" id="pay-modal">
     <div class="modal" style="text-align: left;">
-      <h2 style="font-size: 20px; margin-bottom: 8px;">Pay Bill</h2>
-      <p class="text-sm" style="color: #666; margin-bottom: 20px;">Enter the amount you wish to pay.</p>
-      <label class="text-sm" style="font-weight: bold;">Amount (ZMW)</label>
+      <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Pay Bill</h2>
+      <p class="text-sm text-muted mb-6">Enter the amount you wish to pay.</p>
+      
+      <label class="text-sm" style="font-weight: 600;">Amount (ZMW)</label>
       <input type="number" id="pay-amount" placeholder="e.g. 200" style="margin-top: 4px;">
-      <label class="text-sm" style="font-weight: bold;">Payment Method</label>
+      
+      <label class="text-sm" style="font-weight: 600;">Payment Method</label>
       <select id="pay-method" style="margin-top: 4px;">
         <option value="mtn_momo">MTN MoMo</option>
         <option value="airtel_money">Airtel Money</option>
         <option value="cash">Cash</option>
       </select>
-      <div style="display: flex; gap: 8px; margin-top: 16px;">
+      
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
         <button class="btn btn-outline" onclick="closePayModal()">Cancel</button>
         <button class="btn" onclick="submitPayment()" id="pay-btn">Confirm</button>
       </div>
@@ -189,8 +249,8 @@
   <div class="modal-overlay" id="alert-modal">
     <div class="modal">
       <div class="modal-icon success" id="alert-icon">✓</div>
-      <h2 id="alert-title" style="font-size: 20px; margin-bottom: 8px;">Success!</h2>
-      <p id="alert-message" class="text-sm" style="color: #666; margin-bottom: 24px;">Action completed.</p>
+      <h2 id="alert-title" style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Success!</h2>
+      <p id="alert-message" class="text-sm text-muted mb-6">Action completed.</p>
       <button class="btn" onclick="closeAlert()">Got it</button>
     </div>
   </div>
@@ -199,9 +259,8 @@
     // ==========================================
     // ⚠️ PASTE YOUR KEYS HERE ⚠️
     // ==========================================
-    var SUPABASE_URL = 'https://ngyvyldiwzivpvgwyssp.supabase.co';
+     var SUPABASE_URL = 'https://ngyvyldiwzivpvgwyssp.supabase.co';
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neXZ5bGRpd3ppdnB2Z3d5c3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1OTM3OTIsImV4cCI6MjExMDE2OTc5Mn0.KjKD1Ca9IcVi6M3hyApk7PH7vywjn5CzJjo4tCHmR-c';
-
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     var currentUser = null;
     var currentCustomer = null;
@@ -243,7 +302,7 @@
       if (!email || !password) { document.getElementById('auth-error').innerText = 'Please enter email and password.'; return; }
       var res = await supabaseClient.auth.signUp({ email: email, password: password });
       if (res.error) { document.getElementById('auth-error').innerText = res.error.message; } 
-      else { showAlert('Account Created!', 'Welcome to Zambia Garbage Collection.', false); if (res.data.user) routeUser(res.data.user); }
+      else { showAlert('Account Created!', 'Welcome to Kasama Garbage.', false); if (res.data.user) routeUser(res.data.user); }
     }
 
     async function handleLogout() {
@@ -258,13 +317,12 @@
       document.getElementById('auth-screen').classList.remove('active');
       
       var isAdmin = false;
-      var profRes = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+      // Check if user is admin via email (hardcoded for you)
+      if (user.email === 'alphwila7@gmail.com') { isAdmin = true; }
       
-      if (profRes.data && profRes.data.role === 'owner_admin') {
-        isAdmin = true;
-      } else if (user.email === 'alphwila7@gmail.com') {
-        isAdmin = true;
-      }
+      // Or check via profiles table role
+      var profRes = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+      if (profRes.data && profRes.data.role === 'owner_admin') { isAdmin = true; }
 
       if (isAdmin) {
         document.getElementById('admin-email').innerText = user.email;
@@ -274,6 +332,7 @@
         document.getElementById('cust-email').innerText = user.email;
         document.getElementById('customer-app').classList.add('active');
         
+        // Safely fetch customer data
         var res = await supabaseClient.from('customers').select('*').eq('profile_id', user.id).single();
         if (res.data) { currentCustomer = res.data; }
 
@@ -286,11 +345,14 @@
       document.getElementById('view-home').classList.add('hidden');
       document.getElementById('view-history').classList.add('hidden');
       document.getElementById('view-profile').classList.add('hidden');
+      
       document.getElementById('nav-home').classList.remove('active');
       document.getElementById('nav-history').classList.remove('active');
       document.getElementById('nav-profile').classList.remove('active');
+      
       document.getElementById('view-' + viewName).classList.remove('hidden');
       document.getElementById('nav-' + viewName).classList.add('active');
+
       if (viewName === 'history') loadPayments();
       if (viewName === 'profile') loadProfile();
     }
@@ -306,36 +368,47 @@
 
     async function requestCollection() {
       if (!currentUser) return;
+      
       if (!currentCustomer) {
         var randNum = Math.floor(Math.random() * 10000);
         var resCust = await supabaseClient.from('customers').insert([{ 
           profile_id: currentUser.id, customer_number: 'C-' + randNum,
-          full_name: currentUser.email.split('@')[0], phone: '0970000000', address: 'Default Address' 
+          full_name: currentUser.email.split('@')[0], phone: '0970000000', address: 'Kasama' 
         }]).select().single();
-        if (resCust.error) { showAlert('Error', resCust.error.message, true); return; }
+        
+        if (resCust.error) { showAlert('Database Error', resCust.error.message, true); return; }
         currentCustomer = resCust.data;
       }
+
       var resReq = await supabaseClient.from('collection_requests').insert([
         { customer_id: currentCustomer.id, status: 'requested', customer_notes: 'Requested via App' }
       ]);
-      if (resReq.error) { showAlert('Error', resReq.error.message, true); } 
-      else { showAlert('Request Sent!', 'Your pickup has been scheduled.', false); loadRequests(); }
+
+      if (resReq.error) { 
+        showAlert('Error', resReq.error.message, true); 
+      } else { 
+        showAlert('Request Sent!', 'Your pickup has been scheduled.', false); 
+        loadRequests(); 
+      }
     }
 
     async function loadRequests() {
       var list = document.getElementById('requests-list');
       var res = await supabaseClient.from('collection_requests').select('*').order('requested_at', { ascending: false });
+
       if (res.error || !res.data || res.data.length === 0) {
-        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No collection requests found.</p></div>'; return;
+        list.innerHTML = '<div class="card"><p class="text-sm text-muted">No collection requests found.</p></div>';
+        return;
       }
+
       var html = '';
       res.data.forEach(function(req) {
         var dateStr = new Date(req.requested_at).toLocaleDateString();
-        html += '<div class="card-app" style="padding: 16px;">';
-        html += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">';
-        html += '<strong>Pickup Request</strong>';
-        html += '<span style="font-size: 12px; background: #eee; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">' + req.status + '</span>';
-        html += '</div><div class="text-sm" style="color: #666;">Date: ' + dateStr + '</div></div>';
+        html += '<div class="card" style="padding: 20px;">';
+        html += '<div style="display: flex; justify-content: space-between; margin-bottom: 12px;">';
+        html += '<strong style="font-size: 16px;">Pickup Request</strong>';
+        html += '<span style="font-size: 11px; font-weight: 700; background: #FEF3C7; color: #D97706; padding: 4px 10px; border-radius: 99px; text-transform: uppercase;">' + req.status + '</span>';
+        html += '</div><div class="text-sm text-muted">Date: ' + dateStr + '</div></div>';
       });
       list.innerHTML = html;
     }
@@ -346,63 +419,84 @@
     async function submitPayment() {
       var amount = parseFloat(document.getElementById('pay-amount').value);
       var method = document.getElementById('pay-method').value;
+      
       if (!amount || amount <= 0) { showAlert('Invalid Amount', 'Please enter a valid amount.', true); return; }
       if (!currentCustomer) { showAlert('Action Required', 'Please request a pickup first.', true); return; }
+
       var btn = document.getElementById('pay-btn');
       btn.innerText = 'Processing...'; btn.disabled = true;
+
       var res = await supabaseClient.from('payments').insert([{ 
         customer_id: currentCustomer.id, amount_zmw: amount, method: method, status: 'pending' 
       }]);
+
       btn.innerText = 'Confirm'; btn.disabled = false;
+
       if (res.error) { showAlert('Payment Error', res.error.message, true); } 
       else { showAlert('Payment Recorded!', 'Your payment is now pending confirmation.', false); closePayModal(); }
     }
 
     async function loadPayments() {
       var list = document.getElementById('payments-list');
-      if (!currentCustomer) { list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payment history.</p></div>'; return; }
-      var res = await supabaseClient.from('payments').select('*').eq('customer_id', currentCustomer.id).order('payment_date', { ascending: false });
-      if (res.error || !res.data || res.data.length === 0) {
-        list.innerHTML = '<div class="card-app"><p class="text-sm" style="color: #666;">No payments recorded yet.</p></div>'; return;
+      if (!currentCustomer) {
+        list.innerHTML = '<div class="card"><p class="text-sm text-muted">No payment history.</p></div>'; return;
       }
+      var res = await supabaseClient.from('payments').select('*').eq('customer_id', currentCustomer.id).order('payment_date', { ascending: false });
+
+      if (res.error || !res.data || res.data.length === 0) {
+        list.innerHTML = '<div class="card"><p class="text-sm text-muted">No payments recorded yet.</p></div>'; return;
+      }
+
       var html = '';
       res.data.forEach(function(pay) {
-        var statusColor = pay.status === 'confirmed' ? '#10B981' : '#F59E0B';
+        var statusColor = pay.status === 'confirmed' ? '#D1FAE5' : '#FEF3C7';
+        var textColor = pay.status === 'confirmed' ? '#059669' : '#D97706';
         var dateStr = new Date(pay.payment_date).toLocaleDateString();
-        html += '<div class="card-app" style="padding: 16px;">';
-        html += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">';
-        html += '<strong>ZMW ' + pay.amount_zmw.toFixed(2) + '</strong>';
-        html += '<span style="font-size: 12px; color: white; background: ' + statusColor + '; padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">' + pay.status + '</span>';
-        html += '</div><div class="text-sm" style="color: #666;">Method: ' + pay.method.toUpperCase() + '</div>';
-        html += '<div class="text-sm" style="color: #666;">Date: ' + dateStr + '</div></div>';
+        html += '<div class="card" style="padding: 20px;">';
+        html += '<div style="display: flex; justify-content: space-between; margin-bottom: 12px;">';
+        html += '<strong style="font-size: 18px;">ZMW ' + pay.amount_zmw.toFixed(2) + '</strong>';
+        html += '<span style="font-size: 11px; font-weight: 700; background: ' + statusColor + '; color: ' + textColor + '; padding: 4px 10px; border-radius: 99px; text-transform: uppercase;">' + pay.status + '</span>';
+        html += '</div><div class="text-sm text-muted">Method: ' + pay.method.toUpperCase() + '</div>';
+        html += '<div class="text-sm text-muted">Date: ' + dateStr + '</div></div>';
       });
       list.innerHTML = html;
     }
 
     async function loadAdminPayments() {
       var container = document.getElementById('admin-payments-table');
-      container.innerHTML = '<p>Loading data...</p>';
+      container.innerHTML = '<p style="color: #666;">Loading data...</p>';
+      
       var res = await supabaseClient.from('payments').select('*, customers(full_name)').order('payment_date', { ascending: false });
+
       if (res.error || !res.data || res.data.length === 0) {
         container.innerHTML = '<p style="color: #666;">No payments found in the system.</p>'; return;
       }
+
       var html = '<table class="data-table"><thead><tr>';
       html += '<th>Customer</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th><th>Action</th>';
       html += '</tr></thead><tbody>';
+
       res.data.forEach(function(pay) {
         var statusClass = pay.status === 'confirmed' ? 'status-confirmed' : 'status-pending';
         var dateStr = new Date(pay.payment_date).toLocaleDateString();
         var custName = pay.customers ? pay.customers.full_name : 'Unknown';
-        html += '<tr><td style="font-weight: 500;">' + custName + '</td>';
-        html += '<td>ZMW ' + pay.amount_zmw.toFixed(2) + '</td>';
+        
+        html += '<tr>';
+        html += '<td style="font-weight: 600;">' + custName + '</td>';
+        html += '<td style="font-weight: 600;">ZMW ' + pay.amount_zmw.toFixed(2) + '</td>';
         html += '<td>' + pay.method.toUpperCase() + '</td>';
         html += '<td>' + dateStr + '</td>';
-        html += '<td><span class="status-badge ' + statusClass + '">' + pay.status + '</span></td><td>';
+        html += '<td><span class="status-badge ' + statusClass + '">' + pay.status + '</span></td>';
+        
+        html += '<td>';
         if (pay.status === 'pending') {
           html += '<button class="btn btn-sm" style="background: #10B981; color: white;" onclick="approvePayment(\'' + pay.id + '\')">Approve</button>';
-        } else { html += '<span style="color: #999; font-size: 14px;">Completed</span>'; }
+        } else {
+          html += '<span style="color: #999; font-size: 14px; font-weight: 500;">Completed</span>';
+        }
         html += '</td></tr>';
       });
+
       html += '</tbody></table>';
       container.innerHTML = html;
     }
@@ -413,11 +507,8 @@
       else { showAlert('Approved!', 'The payment has been successfully confirmed.', false); loadAdminPayments(); }
     }
 
-    // Start the app on page load
     window.addEventListener('DOMContentLoaded', function() { 
-      // Show login screen immediately
       document.getElementById('auth-screen').classList.add('active');
-      // Then check if already logged in
       checkSession(); 
     });
   </script>
